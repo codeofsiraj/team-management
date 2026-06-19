@@ -8,25 +8,25 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  name      String
-  email     String   @unique
-  password  String
-  role      String   @default("member")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  tasks  Task[]  @relation("AssignedTasks")
-  teamId String?
-  team   Team?   @relation(fields: [teamId], references: [id], onDelete: SetNull)
-
+  id                   String             @id @default(cuid())
+  name                 String
+  email                String             @unique
+  password             String
+  role                 String             @default("member")
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+  teamId               String?
+  activityLogs         ActivityLog[]
+  announcementsCreated Announcement[]
   dailyUpdates         DailyUpdate[]
   learnings            Learning[]
-  toolUsages           ToolUsage[]
-  researchDocs         ResearchDocument[]
-  activityLogs         ActivityLog[]
   notifications        Notification[]
-  announcementsCreated Announcement[]
+  researchDocs         ResearchDocument[]
+  tasks                Task[]             @relation("AssignedTasks")
+  toolUsages           ToolUsage[]
+  team                 Team?              @relation(fields: [teamId], references: [id])
+
+  @@index([teamId], map: "User_teamId_fkey")
 }
 
 model Team {
@@ -35,26 +35,25 @@ model Team {
   description String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-
-  members User[]
-  tasks   Task[]
+  tasks       Task[]
+  members     User[]
 }
 
 model Task {
-  id          String  @id @default(cuid())
-  title       String
-  description String?
-  status      String  @default("pending")
-  priority    String  @default("medium")
-
+  id           String   @id @default(cuid())
+  title        String
+  description  String?
+  status       String   @default("pending")
+  priority     String   @default("medium")
   assignedToId String?
   teamId       String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  assignedTo   User?    @relation("AssignedTasks", fields: [assignedToId], references: [id])
+  team         Team?    @relation(fields: [teamId], references: [id])
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  assignedTo User? @relation("AssignedTasks", fields: [assignedToId], references: [id], onDelete: SetNull)
-  team       Team? @relation(fields: [teamId], references: [id], onDelete: SetNull)
+  @@index([assignedToId], map: "Task_assignedToId_fkey")
+  @@index([teamId], map: "Task_teamId_fkey")
 }
 
 model DailyUpdate {
@@ -67,8 +66,9 @@ model DailyUpdate {
   tomorrowPlan   String?
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId], map: "DailyUpdate_userId_fkey")
 }
 
 model Learning {
@@ -80,8 +80,9 @@ model Learning {
   referenceLink String?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId], map: "Learning_userId_fkey")
 }
 
 model ToolUsage {
@@ -95,8 +96,9 @@ model ToolUsage {
   date      DateTime
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId], map: "ToolUsage_userId_fkey")
 }
 
 model ResearchDocument {
@@ -108,8 +110,9 @@ model ResearchDocument {
   fileUrl     String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId], map: "ResearchDocument_userId_fkey")
 }
 
 model ActivityLog {
@@ -120,8 +123,9 @@ model ActivityLog {
   entityId    String
   description String
   createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId], map: "ActivityLog_userId_fkey")
 }
 
 model Notification {
@@ -132,8 +136,9 @@ model Notification {
   type      String
   isRead    Boolean  @default(false)
   createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId], map: "Notification_userId_fkey")
 }
 
 model Announcement {
@@ -144,6 +149,7 @@ model Announcement {
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  createdBy   User     @relation(fields: [createdById], references: [id], onDelete: Cascade)
 
-  createdBy User @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  @@index([createdById], map: "Announcement_createdById_fkey")
 }

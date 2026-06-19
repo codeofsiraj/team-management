@@ -1,3 +1,140 @@
 @import "tailwindcss";
 
-@layer base {}
+@layer base {
+  :root {
+    --color-primary: #770fc2;
+    --color-secondary: #6b1bbd;
+    --color-accent: #a05dd0;
+    --color-background: #f8f7fb;
+    --color-surface: #ffffff;
+    --color-text-primary: #1f2937;
+    --color-text-secondary: #6b7280;
+    --color-border: #e5e7eb;
+    --color-success: #22c55e;
+    --color-warning: #f59e0b;
+    --color-danger: #ef4444;
+  }
+
+  body {
+    background: var(--color-background);
+    color: var(--color-text-primary);
+  }
+
+  input,
+  select,
+  textarea {
+    border-color: var(--color-border) !important;
+    background: var(--color-surface);
+    color: var(--color-text-primary);
+    transition:
+      border-color 160ms ease,
+      box-shadow 160ms ease,
+      background-color 160ms ease;
+  }
+
+  input:focus,
+  select:focus,
+  textarea:focus {
+    border-color: var(--color-primary) !important;
+    box-shadow: 0 0 0 3px rgb(119 15 194 / 14%) !important;
+    outline: none;
+  }
+
+  table thead {
+    background: #f3e8ff !important;
+    color: var(--color-primary) !important;
+  }
+
+  table tbody tr {
+    transition: background-color 160ms ease;
+  }
+
+  table tbody tr:hover {
+    background: #fbf7ff !important;
+  }
+}
+
+@layer components {
+  .brand-hero {
+    position: relative;
+    overflow: hidden;
+    border-color: rgb(160 93 208 / 28%) !important;
+    background:
+      linear-gradient(135deg, rgb(119 15 194 / 10%), rgb(160 93 208 / 14%)),
+      var(--color-surface) !important;
+  }
+
+  .brand-hero::after {
+    content: "";
+    position: absolute;
+    inset: auto -10% -65% 45%;
+    height: 170px;
+    border-radius: 999px;
+    background: radial-gradient(circle, rgb(160 93 208 / 18%), transparent 68%);
+    pointer-events: none;
+  }
+
+  .text-slate-950,
+  .text-slate-900,
+  .text-slate-800,
+  .text-slate-700 {
+    color: var(--color-text-primary) !important;
+  }
+
+  .text-slate-600,
+  .text-slate-500,
+  .text-slate-400 {
+    color: var(--color-text-secondary) !important;
+  }
+
+  .bg-slate-50 {
+    background-color: var(--color-background) !important;
+  }
+
+  .bg-slate-100 {
+    background-color: #f3e8ff !important;
+  }
+
+  .border-slate-200,
+  .border-slate-300 {
+    border-color: var(--color-border) !important;
+  }
+
+  .bg-slate-950 {
+    background-color: var(--color-primary) !important;
+  }
+
+  .hover\:bg-slate-800:hover,
+  .hover\:bg-slate-950:hover {
+    background-color: var(--color-secondary) !important;
+  }
+
+  main section.rounded-lg.border,
+  main form.rounded-lg.border,
+  main article.rounded-lg.border {
+    background: var(--color-surface);
+    border-color: var(--color-border);
+    transition:
+      transform 180ms ease,
+      box-shadow 180ms ease,
+      border-color 180ms ease,
+      background-color 180ms ease;
+  }
+
+  main section.rounded-lg.border:hover,
+  main article.rounded-lg.border:hover {
+    transform: translateY(-1px);
+    border-color: rgb(160 93 208 / 42%);
+    box-shadow: 0 10px 28px rgb(31 41 55 / 8%);
+  }
+
+  main a.text-slate-700,
+  main button.text-slate-700 {
+    color: var(--color-primary) !important;
+  }
+
+  main a.text-slate-700:hover,
+  main button.text-slate-700:hover {
+    color: var(--color-secondary) !important;
+  }
+}

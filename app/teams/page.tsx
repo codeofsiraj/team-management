@@ -66,7 +66,7 @@ export default async function TeamsPage({ searchParams }: TeamsPageProps) {
               Teams
             </p>
             <h1 className="mt-2 text-2xl font-semibold tracking-normal text-slate-950">
-              Team Management
+              Digiart Creation
             </h1>
           </div>
           {isAdmin ? (

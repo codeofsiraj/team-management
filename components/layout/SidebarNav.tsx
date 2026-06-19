@@ -30,15 +30,15 @@ export default function SidebarNav({
           <Link
             key={item.href}
             href={item.href}
-            className={`whitespace-nowrap rounded-md px-3 py-2 text-sm font-medium transition ${
+            className={`whitespace-nowrap rounded-md px-3 py-2 text-sm font-medium transition duration-200 ${
               isActive
-                ? "bg-slate-950 text-white"
-                : "text-slate-600 hover:bg-slate-100 hover:text-slate-950"
+                ? "bg-[#A05DD0] text-white shadow-sm"
+                : "text-white/85 hover:bg-[#6B1BBD] hover:text-white"
             }`}
           >
             <span>{item.label}</span>
             {item.href === "/notifications" && unreadNotifications > 0 ? (
-              <span className="ml-2 rounded-full bg-red-600 px-2 py-0.5 text-xs text-white">
+              <span className="ml-2 rounded-full bg-[#A05DD0] px-2 py-0.5 text-xs text-white ring-1 ring-white/30">
                 {unreadNotifications}
               </span>
             ) : null}

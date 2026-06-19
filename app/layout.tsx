@@ -3,8 +3,8 @@ import "./globals.css";
 import ClientSessionProvider from "@/components/providers/ClientSessionProvider";
 
 export const metadata: Metadata = {
-  title: "Team Management System",
-  description: "Project Foundation",
+  title: "Digiart Creation",
+  description: "Digiart Creation dashboard",
 };
 
 export default function RootLayout({

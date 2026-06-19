@@ -30,24 +30,24 @@ export default async function DashboardLayout({ children }: DashboardLayoutProps
   });
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-950 lg:flex">
+    <div className="min-h-screen bg-[#F8F7FB] text-[#1F2937] lg:flex">
       <Sidebar
         role={sessionUser?.role}
         unreadNotifications={unreadNotifications}
       />
       <main className="flex-1">
         {announcements.length > 0 ? (
-          <div className="border-b border-slate-200 bg-white px-4 py-3 sm:px-6 lg:px-8">
+          <div className="border-b border-[#E5E7EB] bg-gradient-to-r from-[#770FC2]/10 via-white to-[#A05DD0]/10 px-4 py-3 sm:px-6 lg:px-8">
             <div className="mx-auto flex max-w-7xl flex-col gap-2">
               {announcements.map((announcement) => (
                 <div
                   key={announcement.id}
-                  className="rounded-md border border-slate-200 bg-slate-50 px-4 py-3"
+                  className="rounded-md border border-[#A05DD0]/25 bg-white/80 px-4 py-3 shadow-sm backdrop-blur"
                 >
-                  <p className="text-sm font-semibold text-slate-950">
+                  <p className="text-sm font-semibold text-[#1F2937]">
                     {announcement.title}
                   </p>
-                  <p className="mt-1 text-sm text-slate-600">
+                  <p className="mt-1 text-sm text-[#6B7280]">
                     {announcement.message}
                   </p>
                 </div>
