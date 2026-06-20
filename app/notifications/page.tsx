@@ -16,8 +16,9 @@ export default async function NotificationsPage() {
   const session = await auth();
   if (!session?.user) redirect("/login");
   const sessionUser = session.user as typeof session.user & { id?: string; role?: string };
+  if (sessionUser.role === "admin") redirect("/");
   const notifications = await prisma.notification.findMany({
-    where: sessionUser.role === "admin" ? {} : { userId: sessionUser.id },
+    where: { userId: sessionUser.id },
     orderBy: { createdAt: "desc" },
     include: { user: { select: { name: true } } },
   });

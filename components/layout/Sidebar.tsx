@@ -1,3 +1,4 @@
+import Image from "next/image";
 import SidebarNav from "@/components/layout/SidebarNav";
 
 type SidebarProps = {
@@ -46,7 +47,6 @@ function getNavItems(role?: string) {
     { label: "AI Tools", href: "/tools" },
     { label: "Research Docs", href: "/research" },
     { label: "Activity", href: "/activity" },
-    { label: "Notifications", href: "/notifications" },
     { label: "Announcements", href: "/announcements" },
     { label: "Search", href: "/search" },
   ];
@@ -64,16 +64,23 @@ export default function Sidebar({ role, unreadNotifications = 0 }: SidebarProps)
   return (
     <aside className="flex border-b border-white/15 bg-[#770FC2] text-white shadow-xl shadow-purple-950/10 lg:min-h-screen lg:w-64 lg:flex-col lg:border-b-0 lg:border-r lg:border-white/15">
       <div className="flex w-full flex-col gap-4 p-4 lg:p-6">
-        <div className="rounded-lg border border-white/15 bg-white/10 p-4 shadow-sm backdrop-blur">
+        <div className="rounded-lg border border-white/15 bg-white/10 p-3 shadow-sm backdrop-blur">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/15 text-sm font-semibold text-white">
-              DC
+            <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-lg bg-white shadow-sm">
+              <Image
+                src="/digiart-logo.jpg"
+                alt="Digiart Creation logo"
+                fill
+                sizes="44px"
+                className="object-contain p-1"
+                priority
+              />
             </div>
-            <div>
-              <p className="text-lg font-semibold text-white">
+            <div className="min-w-0">
+              <p className="whitespace-nowrap text-base font-semibold leading-tight text-white lg:text-[15px] xl:text-base">
                 Digiart Creation
               </p>
-              <p className="text-sm text-white/80">
+              <p className="mt-1 whitespace-nowrap text-xs font-medium text-white/80">
                 {dashboardTitle}
               </p>
             </div>

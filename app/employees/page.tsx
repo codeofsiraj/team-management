@@ -13,6 +13,10 @@ const dateFormatter = new Intl.DateTimeFormat("en", {
   day: "numeric",
 });
 
+function formatRole(role: string) {
+  return role === "member" ? "employee" : role;
+}
+
 type EmployeesPageProps = {
   searchParams: Promise<{ page?: string }>;
 };
@@ -103,7 +107,7 @@ export default async function EmployeesPage({ searchParams }: EmployeesPageProps
                       </td>
                       <td className="px-4 py-4">
                         <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium capitalize text-slate-700">
-                          {employee.role}
+                          {formatRole(employee.role)}
                         </span>
                       </td>
                       <td className="px-4 py-4 text-slate-600">

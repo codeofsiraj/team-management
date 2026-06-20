@@ -15,6 +15,10 @@ function formatLabel(value: string) {
   return value.replace("_", " ");
 }
 
+function formatRole(role?: string | null) {
+  return role === "member" ? "employee" : role;
+}
+
 export default async function ManagerDashboardPage() {
   const session = await auth();
 
@@ -134,7 +138,7 @@ export default async function ManagerDashboardPage() {
               Role
             </p>
             <p className="mt-1 text-sm font-semibold capitalize text-slate-950">
-              {manager.role}
+              {formatRole(manager.role)}
             </p>
           </div>
         </header>

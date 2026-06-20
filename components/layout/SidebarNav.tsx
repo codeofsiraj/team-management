@@ -45,7 +45,7 @@ export default function SidebarNav({
           </Link>
         );
       })}
-      <div className="min-w-28 lg:min-w-0">
+      <div className="min-w-fit lg:mt-2">
         <LogoutButton />
       </div>
     </nav>

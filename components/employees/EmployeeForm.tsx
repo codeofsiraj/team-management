@@ -12,6 +12,11 @@ type EmployeeFormProps = {
 
 const roles = ["admin", "manager", "member"];
 
+function formatRole(role: string) {
+  const label = role === "member" ? "employee" : role;
+  return label.charAt(0).toUpperCase() + label.slice(1);
+}
+
 export default function EmployeeForm({
   action,
   submitLabel,
@@ -70,11 +75,11 @@ export default function EmployeeForm({
             required
             className="rounded-md border border-slate-300 px-3 py-2 text-sm capitalize outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-200"
           >
-            {roles.map((role) => (
-              <option key={role} value={role}>
-                {role}
-              </option>
-            ))}
+              {roles.map((role) => (
+                <option key={role} value={role}>
+                {formatRole(role)}
+                </option>
+              ))}
           </select>
         </label>
       </div>

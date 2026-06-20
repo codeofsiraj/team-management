@@ -296,6 +296,7 @@ export async function updateOwnTaskStatus(formData: FormData) {
     where: { id },
     select: {
       assignedToId: true,
+      teamId: true,
     },
   });
 
@@ -303,10 +304,16 @@ export async function updateOwnTaskStatus(formData: FormData) {
     throw new Error("Task not found.");
   }
 
-  const canUpdateStatus =
-    sessionUser.role === "admin" ||
-    sessionUser.role === "manager" ||
-    task.assignedToId === sessionUser.id;
+  let canUpdateStatus = false;
+
+  if (sessionUser.role === "admin") {
+    canUpdateStatus = true;
+  } else if (sessionUser.role === "manager") {
+    const managerTeamId = await getManagerTeamId(sessionUser.id);
+    canUpdateStatus = task.teamId === managerTeamId;
+  } else {
+    canUpdateStatus = task.assignedToId === sessionUser.id;
+  }
 
   if (!canUpdateStatus) {
     redirect("/tasks");
@@ -321,6 +328,13 @@ export async function updateOwnTaskStatus(formData: FormData) {
       where: { id },
       data: { status },
     });
+    await logActivity({
+      userId: sessionUser.id,
+      action: "updated",
+      entityType: "task",
+      entityId: id,
+      description: `Updated task status for ${previous?.title ?? "task"}`,
+    });
     if (
       previous?.assignedToId &&
       status === "completed" &&
@@ -331,6 +345,13 @@ export async function updateOwnTaskStatus(formData: FormData) {
         title: "Task completed",
         message: `Task completed: ${previous.title}`,
         type: "TASK_COMPLETED",
+      });
+    } else if (previous?.assignedToId && previous.status !== status) {
+      await createNotification({
+        userId: previous.assignedToId,
+        title: "Task updated",
+        message: `Task status changed: ${previous.title}`,
+        type: "TASK_UPDATED",
       });
     }
   } catch (error) {

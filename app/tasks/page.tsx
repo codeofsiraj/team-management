@@ -29,7 +29,9 @@ type TasksPageProps = {
 };
 
 function formatLabel(value: string) {
-  return value.replace("_", " ");
+  return value
+    .replace("_", " ")
+    .replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
 
 export default async function TasksPage({ searchParams }: TasksPageProps) {
@@ -287,32 +289,26 @@ export default async function TasksPage({ searchParams }: TasksPageProps) {
                         {task.team?.name ?? "No team"}
                       </td>
                       <td className="px-4 py-4">
-                        {isMember ? (
-                          <form action={updateOwnTaskStatus} className="flex gap-2">
-                            <input type="hidden" name="id" value={task.id} />
-                            <select
-                              name="status"
-                              defaultValue={task.status}
-                              className="rounded-md border border-slate-300 px-2 py-1 text-xs"
-                            >
-                              {statusOptions.map((status) => (
-                                <option key={status} value={status}>
-                                  {formatLabel(status)}
-                                </option>
-                              ))}
-                            </select>
-                            <button
-                              type="submit"
-                              className="rounded-md border border-slate-300 px-2 py-1 text-xs font-medium text-slate-700 transition hover:bg-slate-50"
-                            >
-                              Save
-                            </button>
-                          </form>
-                        ) : (
-                          <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium capitalize text-slate-700">
-                            {formatLabel(task.status)}
-                          </span>
-                        )}
+                        <form action={updateOwnTaskStatus} className="flex gap-2">
+                          <input type="hidden" name="id" value={task.id} />
+                          <select
+                            name="status"
+                            defaultValue={task.status}
+                            className="rounded-md border border-slate-300 px-2 py-1 text-xs"
+                          >
+                            {statusOptions.map((status) => (
+                              <option key={status} value={status}>
+                                {formatLabel(status)}
+                              </option>
+                            ))}
+                          </select>
+                          <button
+                            type="submit"
+                            className="rounded-md border border-slate-300 px-2 py-1 text-xs font-medium text-slate-700 transition hover:bg-slate-50"
+                          >
+                            Save
+                          </button>
+                        </form>
                       </td>
                       <td className="px-4 py-4">
                         <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium capitalize text-slate-700">

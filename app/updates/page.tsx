@@ -6,10 +6,10 @@ import DashboardLayout from "@/components/layout/DashboardLayout";
 import PaginationControls from "@/components/layout/PaginationControls";
 import { getPage, getPagination, PAGE_SIZE } from "@/lib/pagination";
 
-const dateFormatter = new Intl.DateTimeFormat("en", {
+const dateFormatter = new Intl.DateTimeFormat("en-GB", {
   year: "numeric",
-  month: "short",
   day: "numeric",
+  month: "short",
 });
 
 type UpdatesPageProps = {
@@ -38,6 +38,7 @@ export default async function UpdatesPage({ searchParams }: UpdatesPageProps) {
 
   const params = await searchParams;
   const page = getPage(params.page);
+  const showEmployeeColumn = sessionUser.role === "admin";
   const where =
     sessionUser.role === "admin"
       ? {}
@@ -92,11 +93,13 @@ export default async function UpdatesPage({ searchParams }: UpdatesPageProps) {
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full min-w-[920px] text-left text-sm">
+              <table className="w-full min-w-[820px] text-left text-sm">
                 <thead className="border-b border-slate-200 bg-slate-50 text-xs uppercase tracking-normal text-slate-500">
                   <tr>
                     <th className="px-4 py-3 font-semibold">Date</th>
-                    <th className="px-4 py-3 font-semibold">Employee</th>
+                    {showEmployeeColumn ? (
+                      <th className="px-4 py-3 font-semibold">Employee</th>
+                    ) : null}
                     <th className="px-4 py-3 font-semibold">Worked On</th>
                     <th className="px-4 py-3 font-semibold">Blockers</th>
                     <th className="px-4 py-3 font-semibold">Actions</th>
@@ -108,9 +111,11 @@ export default async function UpdatesPage({ searchParams }: UpdatesPageProps) {
                       <td className="px-4 py-4 text-slate-600">
                         {dateFormatter.format(update.date)}
                       </td>
-                      <td className="px-4 py-4 font-medium text-slate-950">
-                        {update.user.name}
-                      </td>
+                      {showEmployeeColumn ? (
+                        <td className="px-4 py-4 font-medium text-slate-950">
+                          {update.user.name}
+                        </td>
+                      ) : null}
                       <td className="px-4 py-4 text-slate-600">
                         {update.workedOn}
                       </td>
@@ -119,12 +124,19 @@ export default async function UpdatesPage({ searchParams }: UpdatesPageProps) {
                       </td>
                       <td className="px-4 py-4">
                         {update.user.id === sessionUser.id ? (
-                          <Link
-                            href={`/updates/${update.id}/edit`}
-                            className="text-sm font-medium text-slate-700 transition hover:text-slate-950"
-                          >
-                            Edit
-                          </Link>
+                          <div className="flex flex-col gap-1">
+                            <Link
+                              href={`/updates/${update.id}/edit`}
+                              className="text-sm font-medium text-slate-700 transition hover:text-slate-950"
+                            >
+                              Edit
+                            </Link>
+                            {update.updatedAt.getTime() !== update.createdAt.getTime() ? (
+                              <span className="text-xs text-slate-500">
+                                (Edited on {dateFormatter.format(update.updatedAt)})
+                              </span>
+                            ) : null}
+                          </div>
                         ) : (
                           <span className="text-sm text-slate-400">
                             View only
