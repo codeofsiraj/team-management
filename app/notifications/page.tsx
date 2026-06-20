@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { markAllNotificationsRead, markNotificationRead } from "@/app/notifications/actions";
+import { getVisibleNotificationWhere } from "@/lib/notifications";
 
 const dateFormatter = new Intl.DateTimeFormat("en", {
   year: "numeric",
@@ -16,9 +17,10 @@ export default async function NotificationsPage() {
   const session = await auth();
   if (!session?.user) redirect("/login");
   const sessionUser = session.user as typeof session.user & { id?: string; role?: string };
+  if (!sessionUser.id) redirect("/login");
   if (sessionUser.role === "admin") redirect("/");
   const notifications = await prisma.notification.findMany({
-    where: { userId: sessionUser.id },
+    where: getVisibleNotificationWhere(sessionUser.id),
     orderBy: { createdAt: "desc" },
     include: { user: { select: { name: true } } },
   });

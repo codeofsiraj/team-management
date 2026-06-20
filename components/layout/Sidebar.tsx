@@ -17,7 +17,6 @@ function getNavItems(role?: string) {
       { label: "Research Docs", href: "/research" },
       { label: "Activity", href: "/activity" },
       { label: "Notifications", href: "/notifications" },
-      { label: "Announcements", href: "/announcements" },
       { label: "Search", href: "/search" },
     ];
   }
@@ -32,7 +31,6 @@ function getNavItems(role?: string) {
       { label: "Research Docs", href: "/research" },
       { label: "Activity", href: "/activity" },
       { label: "Notifications", href: "/notifications" },
-      { label: "Announcements", href: "/announcements" },
       { label: "Search", href: "/search" },
     ];
   }
@@ -47,7 +45,6 @@ function getNavItems(role?: string) {
     { label: "AI Tools", href: "/tools" },
     { label: "Research Docs", href: "/research" },
     { label: "Activity", href: "/activity" },
-    { label: "Announcements", href: "/announcements" },
     { label: "Search", href: "/search" },
   ];
 }
@@ -62,25 +59,25 @@ export default function Sidebar({ role, unreadNotifications = 0 }: SidebarProps)
         : "Admin Dashboard";
 
   return (
-    <aside className="flex border-b border-white/15 bg-[#770FC2] text-white shadow-xl shadow-purple-950/10 lg:min-h-screen lg:w-64 lg:flex-col lg:border-b-0 lg:border-r lg:border-white/15">
+    <aside className="flex border-b border-[#E5E7EB] bg-white text-[#1F2937] shadow-sm lg:min-h-screen lg:w-64 lg:flex-col lg:border-b-0 lg:border-r">
       <div className="flex w-full flex-col gap-4 p-4 lg:p-6">
-        <div className="rounded-lg border border-white/15 bg-white/10 p-3 shadow-sm backdrop-blur">
+        <div className="rounded-lg border border-[#E5E7EB] bg-[#F8F7FB] p-3">
           <div className="flex items-center gap-3">
-            <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-lg bg-white shadow-sm">
+            <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-md">
               <Image
                 src="/digiart-logo.jpg"
                 alt="Digiart Creation logo"
                 fill
                 sizes="44px"
-                className="object-contain p-1"
+                className="object-contain"
                 priority
               />
             </div>
             <div className="min-w-0">
-              <p className="whitespace-nowrap text-base font-semibold leading-tight text-white lg:text-[15px] xl:text-base">
+              <p className="whitespace-nowrap text-base font-semibold leading-tight text-[#1F2937] lg:text-[15px] xl:text-base">
                 Digiart Creation
               </p>
-              <p className="mt-1 whitespace-nowrap text-xs font-medium text-white/80">
+              <p className="mt-1 whitespace-nowrap text-xs font-medium text-[#6B7280]">
                 {dashboardTitle}
               </p>
             </div>

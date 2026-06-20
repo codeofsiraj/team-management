@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 
 type NotificationType =
   | "TASK_ASSIGNED"
@@ -13,6 +14,25 @@ type NotificationInput = {
   message: string;
   type: NotificationType;
 };
+
+const visibleNotificationTypes = [
+  "ANNOUNCEMENT",
+  "TASK_ASSIGNED",
+  "DAILY_UPDATE_CREATED",
+];
+
+export function getVisibleNotificationWhere(
+  userId: string,
+  extraWhere: Prisma.NotificationWhereInput = {}
+): Prisma.NotificationWhereInput {
+  return {
+    userId,
+    type: {
+      in: visibleNotificationTypes,
+    },
+    ...extraWhere,
+  };
+}
 
 export async function createNotification({
   userId,

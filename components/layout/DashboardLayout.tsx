@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import Sidebar from "@/components/layout/Sidebar";
 import AnnouncementBanner from "@/components/layout/AnnouncementBanner";
+import { getVisibleNotificationWhere } from "@/lib/notifications";
 
 type DashboardLayoutProps = {
   children: ReactNode;
@@ -20,8 +21,9 @@ export default async function DashboardLayout({ children }: DashboardLayoutProps
     ? sessionUser.role === "admin"
       ? 0
       : await prisma.notification.count({
-        where:
-          { userId: sessionUser.id, isRead: false },
+        where: getVisibleNotificationWhere(sessionUser.id, {
+          isRead: false,
+        }),
       })
     : 0;
   const announcements = await prisma.announcement.findMany({

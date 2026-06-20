@@ -32,20 +32,20 @@ export default function SidebarNav({
             href={item.href}
             className={`whitespace-nowrap rounded-md px-3 py-2 text-sm font-medium transition duration-200 ${
               isActive
-                ? "bg-[#A05DD0] text-white shadow-sm"
-                : "text-white/85 hover:bg-[#6B1BBD] hover:text-white"
+                ? "bg-[#6B1BBD] text-white shadow-sm"
+                : "text-[#4B5563] hover:bg-[#F3E8FF] hover:text-[#770FC2]"
             }`}
           >
             <span>{item.label}</span>
             {item.href === "/notifications" && unreadNotifications > 0 ? (
-              <span className="ml-2 rounded-full bg-[#A05DD0] px-2 py-0.5 text-xs text-white ring-1 ring-white/30">
+              <span className="ml-2 rounded-full bg-[#A05DD0] px-2 py-0.5 text-xs text-white">
                 {unreadNotifications}
               </span>
             ) : null}
           </Link>
         );
       })}
-      <div className="min-w-fit lg:mt-2">
+      <div className="min-w-fit lg:mt-5">
         <LogoutButton />
       </div>
     </nav>

@@ -58,9 +58,9 @@ export default function AnnouncementBanner({
             <button
               type="button"
               onClick={() => dismissAnnouncement(announcement.id)}
-              className="inline-flex shrink-0 items-center justify-center rounded-md bg-[#F3E8FF] px-3 py-1.5 text-sm font-medium text-[#770FC2] transition hover:bg-[#A05DD0] hover:text-white"
+              className="inline-flex shrink-0 items-center justify-center rounded-md bg-[#1F2937] px-3 py-1.5 text-sm font-medium text-white shadow-sm transition duration-200 hover:bg-[#6B1BBD]"
             >
-              Noted ✅
+              Noted &#x2705;
             </button>
           </div>
         ))}

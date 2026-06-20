@@ -17,7 +17,7 @@ async function requireAdmin() {
   const sessionUser = session?.user as
     | (NonNullable<typeof session>["user"] & { id?: string; role?: string })
     | undefined;
-  if (sessionUser?.role !== "admin" || !sessionUser.id) redirect("/announcements");
+  if (sessionUser?.role !== "admin" || !sessionUser.id) redirect("/");
   return sessionUser as typeof sessionUser & { id: string };
 }
 
@@ -47,9 +47,8 @@ export async function createAnnouncement(formData: FormData) {
   } catch (error) {
     handleAnnouncementError(error);
   }
-  revalidatePath("/announcements");
   revalidatePath("/");
-  redirect("/announcements");
+  redirect("/");
 }
 
 export async function updateAnnouncement(formData: FormData) {
@@ -72,9 +71,8 @@ export async function updateAnnouncement(formData: FormData) {
     handleAnnouncementError(error);
   }
 
-  revalidatePath("/announcements");
   revalidatePath("/");
-  redirect("/announcements");
+  redirect("/");
 }
 
 export async function toggleAnnouncementActive(id: string, isActive: boolean) {
@@ -89,6 +87,5 @@ export async function toggleAnnouncementActive(id: string, isActive: boolean) {
   } catch (error) {
     handleAnnouncementError(error);
   }
-  revalidatePath("/announcements");
   revalidatePath("/");
 }
