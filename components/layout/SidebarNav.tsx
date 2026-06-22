@@ -21,7 +21,7 @@ export default function SidebarNav({
   const pathname = usePathname();
 
   return (
-    <nav className="flex gap-2 overflow-x-auto lg:flex-col lg:overflow-visible">
+    <nav className="flex max-w-full gap-2 overflow-x-auto pb-1 lg:flex-col lg:overflow-visible lg:pb-0">
       {items.map((item) => {
         const isActive =
           item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
@@ -45,7 +45,7 @@ export default function SidebarNav({
           </Link>
         );
       })}
-      <div className="min-w-fit lg:mt-5">
+      <div className="min-w-fit pl-3 lg:mt-3">
         <LogoutButton />
       </div>
     </nav>

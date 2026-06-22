@@ -18,6 +18,24 @@
   body {
     background: var(--color-background);
     color: var(--color-text-primary);
+    overflow-x: hidden;
+  }
+
+  main,
+  form,
+  fieldset,
+  label,
+  section,
+  article,
+  div {
+    min-width: 0;
+  }
+
+  img,
+  svg,
+  video,
+  canvas {
+    max-width: 100%;
   }
 
   input,
@@ -26,6 +44,7 @@
     border-color: var(--color-border) !important;
     background: var(--color-surface);
     color: var(--color-text-primary);
+    max-width: 100%;
     transition:
       border-color 160ms ease,
       box-shadow 160ms ease,
@@ -51,6 +70,11 @@
 
   table tbody tr:hover {
     background: #fbf7ff !important;
+  }
+
+  button,
+  a {
+    max-width: 100%;
   }
 }
 
@@ -136,5 +160,32 @@
   main a.text-slate-700:hover,
   main button.text-slate-700:hover {
     color: var(--color-secondary) !important;
+  }
+
+  .overflow-x-auto {
+    max-width: 100%;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  @media (max-width: 640px) {
+    main {
+      width: 100%;
+    }
+
+    main .mx-auto {
+      max-width: 100%;
+    }
+
+    main header,
+    main form.rounded-lg,
+    main section.rounded-lg,
+    main article.rounded-lg {
+      border-radius: 0.5rem;
+    }
+
+    main button,
+    main a {
+      overflow-wrap: anywhere;
+    }
   }
 }
