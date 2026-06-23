@@ -12,11 +12,13 @@ type NavItem = {
 type SidebarNavProps = {
   items: NavItem[];
   unreadNotifications?: number;
+  alertCounts?: Record<string, number | undefined>;
 };
 
 export default function SidebarNav({
   items,
   unreadNotifications = 0,
+  alertCounts = {},
 }: SidebarNavProps) {
   const pathname = usePathname();
 
@@ -37,6 +39,11 @@ export default function SidebarNav({
             }`}
           >
             <span>{item.label}</span>
+            {alertCounts[item.href] ? (
+              <span className="ml-2 rounded-full bg-[#F3E8FF] px-2 py-0.5 text-xs text-[#770FC2]">
+                {alertCounts[item.href]}
+              </span>
+            ) : null}
             {item.href === "/notifications" && unreadNotifications > 0 ? (
               <span className="ml-2 rounded-full bg-[#A05DD0] px-2 py-0.5 text-xs text-white">
                 {unreadNotifications}

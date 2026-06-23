@@ -9,29 +9,47 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
+        role: { label: "Role", type: "text" },
       },
       async authorize(credentials) {
         const email = credentials?.email;
         const password = credentials?.password;
+        const role = credentials?.role;
 
         if (typeof email !== "string" || typeof password !== "string") {
           return null;
         }
 
-        const user = await prisma.user.findUnique({
+        const users = await prisma.user.findMany({
           where: { email },
         });
 
-        if (!user) {
+        if (users.length === 0) {
           return null;
         }
 
-        const passwordMatches = await bcrypt.compare(
-          password,
-          user.password
-        );
+        const matchingUsers = [];
 
-        if (!passwordMatches) {
+        for (const user of users) {
+          const passwordMatches = await bcrypt.compare(password, user.password);
+
+          if (passwordMatches) {
+            matchingUsers.push(user);
+          }
+        }
+
+        if (matchingUsers.length === 0) {
+          return null;
+        }
+
+        const user =
+          typeof role === "string" && role
+            ? matchingUsers.find((candidate) => candidate.role === role)
+            : matchingUsers.length === 1
+              ? matchingUsers[0]
+              : null;
+
+        if (!user) {
           return null;
         }
 

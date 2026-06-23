@@ -4,6 +4,7 @@ import SidebarNav from "@/components/layout/SidebarNav";
 type SidebarProps = {
   role?: string;
   unreadNotifications?: number;
+  alertCounts?: Record<string, number | undefined>;
 };
 
 function getNavItems(role?: string) {
@@ -14,9 +15,7 @@ function getNavItems(role?: string) {
       { label: "Daily Updates", href: "/updates" },
       { label: "Learnings", href: "/learnings" },
       { label: "AI Tools", href: "/tools" },
-      { label: "Research Docs", href: "/research" },
       { label: "Activity", href: "/activity" },
-      { label: "Notifications", href: "/notifications" },
       { label: "Search", href: "/search" },
     ];
   }
@@ -28,9 +27,7 @@ function getNavItems(role?: string) {
       { label: "Daily Updates", href: "/updates" },
       { label: "Learnings", href: "/learnings" },
       { label: "AI Tools", href: "/tools" },
-      { label: "Research Docs", href: "/research" },
       { label: "Activity", href: "/activity" },
-      { label: "Notifications", href: "/notifications" },
       { label: "Search", href: "/search" },
     ];
   }
@@ -43,13 +40,16 @@ function getNavItems(role?: string) {
     { label: "Daily Updates", href: "/updates" },
     { label: "Learnings", href: "/learnings" },
     { label: "AI Tools", href: "/tools" },
-    { label: "Research Docs", href: "/research" },
     { label: "Activity", href: "/activity" },
     { label: "Search", href: "/search" },
   ];
 }
 
-export default function Sidebar({ role, unreadNotifications = 0 }: SidebarProps) {
+export default function Sidebar({
+  role,
+  unreadNotifications = 0,
+  alertCounts = {},
+}: SidebarProps) {
   const navItems = getNavItems(role);
   const dashboardTitle =
     role === "manager"
@@ -87,6 +87,7 @@ export default function Sidebar({ role, unreadNotifications = 0 }: SidebarProps)
         <SidebarNav
           items={navItems}
           unreadNotifications={unreadNotifications}
+          alertCounts={alertCounts}
         />
       </div>
     </aside>

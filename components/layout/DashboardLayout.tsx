@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import Sidebar from "@/components/layout/Sidebar";
 import AnnouncementBanner from "@/components/layout/AnnouncementBanner";
 import { getVisibleNotificationWhere } from "@/lib/notifications";
+import { getSidebarAlertCounts } from "@/lib/moduleAlerts";
 
 type DashboardLayoutProps = {
   children: ReactNode;
@@ -26,21 +27,37 @@ export default async function DashboardLayout({ children }: DashboardLayoutProps
         }),
       })
     : 0;
-  const announcements = await prisma.announcement.findMany({
-    where: { isActive: true },
-    orderBy: { createdAt: "desc" },
-    take: 2,
-  });
+  const visibleNotifications = sessionUser?.id
+    ? await prisma.notification.findMany({
+        where: getVisibleNotificationWhere(sessionUser.id, {
+          isRead: false,
+          OR: [{ expiresAt: null }, { expiresAt: { gt: new Date() } }],
+        }),
+        orderBy: { createdAt: "desc" },
+        take: 8,
+      })
+    : [];
+  const moduleAlertCounts = await getSidebarAlertCounts(
+    sessionUser?.id,
+    sessionUser?.role
+  );
+  const sidebarAlertCounts = {
+    "/tasks": moduleAlertCounts.tasks,
+    "/updates": moduleAlertCounts.updates,
+    "/learnings": moduleAlertCounts.learnings,
+    "/tools": moduleAlertCounts.tools,
+  };
 
   return (
     <div className="min-h-screen bg-[#F8F7FB] text-[#1F2937] lg:flex">
       <Sidebar
         role={sessionUser?.role}
         unreadNotifications={unreadNotifications}
+        alertCounts={sidebarAlertCounts}
       />
       <main className="flex-1">
         <AnnouncementBanner
-          announcements={announcements}
+          announcements={visibleNotifications}
           userId={sessionUser?.id}
         />
         {children}

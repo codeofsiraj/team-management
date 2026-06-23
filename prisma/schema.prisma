@@ -10,7 +10,7 @@ datasource db {
 model User {
   id                   String             @id @default(cuid())
   name                 String
-  email                String             @unique
+  email                String
   password             String
   role                 String             @default("member")
   createdAt            DateTime           @default(now())
@@ -21,12 +21,14 @@ model User {
   dailyUpdates         DailyUpdate[]
   learnings            Learning[]
   notifications        Notification[]
+  moduleReviews        ModuleReview[]
   researchDocs         ResearchDocument[]
   tasks                Task[]             @relation("AssignedTasks")
   toolUsages           ToolUsage[]
   team                 Team?              @relation(fields: [teamId], references: [id])
 
   @@index([teamId], map: "User_teamId_fkey")
+  @@unique([email, role])
 }
 
 model Team {
@@ -135,10 +137,24 @@ model Notification {
   message   String
   type      String
   isRead    Boolean  @default(false)
+  important Boolean  @default(false)
+  expiresAt DateTime?
   createdAt DateTime @default(now())
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId], map: "Notification_userId_fkey")
+  @@index([expiresAt])
+}
+
+model ModuleReview {
+  id         String   @id @default(cuid())
+  userId     String
+  module     String
+  reviewedAt DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, module])
+  @@index([userId])
 }
 
 model Announcement {

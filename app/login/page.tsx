@@ -59,18 +59,21 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [roleOptions, setRoleOptions] = useState<
+    { role: string; label: string }[]
+  >([]);
   const [verse] = useState(
     () => quranVerses[Math.floor(Math.random() * quranVerses.length)]
   );
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  async function completeSignIn(role?: string) {
     setError("");
     setIsSubmitting(true);
 
     const result = await signIn("credentials", {
       email,
       password,
+      role,
       redirect: false,
       callbackUrl: "/",
     });
@@ -83,6 +86,39 @@ export default function LoginPage() {
     }
 
     window.location.href = result?.url ?? "/";
+  }
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setError("");
+    setRoleOptions([]);
+    setIsSubmitting(true);
+
+    const response = await fetch("/api/auth/role-options", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+    });
+    const data = (await response.json()) as {
+      roles?: { role: string; label: string }[];
+    };
+    const roles = data.roles ?? [];
+
+    setIsSubmitting(false);
+
+    if (roles.length === 0) {
+      setError("Invalid email or password.");
+      return;
+    }
+
+    if (roles.length === 1) {
+      await completeSignIn(roles[0].role);
+      return;
+    }
+
+    setRoleOptions(roles);
   }
 
   return (
@@ -127,6 +163,24 @@ export default function LoginPage() {
         </label>
 
         {error ? <p className="text-sm text-red-600">{error}</p> : null}
+
+        {roleOptions.length > 1 ? (
+          <div className="grid gap-2 rounded-md border border-[#E5E7EB] bg-[#F8F7FB] p-3">
+            <p className="text-sm font-medium text-[#1F2937]">
+              Select workspace
+            </p>
+            {roleOptions.map((option) => (
+              <button
+                key={option.role}
+                type="button"
+                onClick={() => completeSignIn(option.role)}
+                className="rounded-md border border-[#A05DD0]/40 bg-white px-3 py-2 text-left text-sm font-medium text-[#770FC2] transition hover:bg-[#F3E8FF]"
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        ) : null}
 
         <blockquote className="rounded-md border border-[#E5E7EB] bg-[#F8F7FB] p-4 text-sm leading-6 text-[#4B5563]">
           <p>&quot;{verse.text}&quot;</p>

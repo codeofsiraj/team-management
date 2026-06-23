@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import StatCard from "@/components/dashboard/StatCard";
 import DashboardLayout from "@/components/layout/DashboardLayout";
+import { createBroadcastNotification } from "@/app/notifications/actions";
 
 export default async function Home() {
   const session = await auth();
@@ -107,6 +108,58 @@ export default async function Home() {
             value={completedTasks}
             description="Tasks finished by the team"
           />
+        </section>
+
+        <section className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
+          <div>
+            <p className="text-sm font-medium uppercase tracking-normal text-slate-500">
+              Create Notification
+            </p>
+            <h2 className="mt-2 text-xl font-semibold text-slate-950">
+              Broadcast to workspace
+            </h2>
+          </div>
+          <form action={createBroadcastNotification} className="mt-5 grid gap-4">
+            <input
+              name="title"
+              placeholder="Title"
+              required
+              className="rounded-md border border-slate-300 px-3 py-2 text-sm"
+            />
+            <textarea
+              name="message"
+              placeholder="Message"
+              required
+              rows={3}
+              className="resize-none rounded-md border border-slate-300 px-3 py-2 text-sm"
+            />
+            <div className="grid gap-4 md:grid-cols-3">
+              <select
+                name="audience"
+                required
+                defaultValue="everyone"
+                className="rounded-md border border-slate-300 px-3 py-2 text-sm"
+              >
+                <option value="employees">Employees</option>
+                <option value="managers">Managers</option>
+                <option value="everyone">Everyone</option>
+              </select>
+              <input
+                name="expiresAt"
+                type="date"
+                className="rounded-md border border-slate-300 px-3 py-2 text-sm"
+              />
+              <label className="flex items-center gap-2 rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-700">
+                <input type="checkbox" name="important" />
+                Important
+              </label>
+            </div>
+            <div>
+              <button className="rounded-md bg-slate-950 px-4 py-2 text-sm font-medium text-white">
+                Create Notification
+              </button>
+            </div>
+          </form>
         </section>
       </div>
     </DashboardLayout>

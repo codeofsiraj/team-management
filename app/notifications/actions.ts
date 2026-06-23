@@ -54,3 +54,48 @@ export async function markAllNotificationsRead() {
 
   revalidatePath("/notifications");
 }
+
+export async function createBroadcastNotification(formData: FormData) {
+  const sessionUser = await getSessionUser();
+
+  if (sessionUser.role !== "admin") {
+    redirect("/");
+  }
+
+  const title = String(formData.get("title") ?? "").trim();
+  const message = String(formData.get("message") ?? "").trim();
+  const audience = String(formData.get("audience") ?? "");
+  const expiresAtValue = String(formData.get("expiresAt") ?? "").trim();
+  const important = formData.get("important") === "on";
+
+  if (!title || !message || !["employees", "managers", "everyone"].includes(audience)) {
+    throw new Error("Enter a title, message, and valid audience.");
+  }
+
+  const users = await prisma.user.findMany({
+    where:
+      audience === "employees"
+        ? { role: "member" }
+        : audience === "managers"
+          ? { role: "manager" }
+          : {},
+    select: { id: true },
+  });
+
+  if (users.length > 0) {
+    await prisma.notification.createMany({
+      data: users.map((user) => ({
+        userId: user.id,
+        title,
+        message,
+        type: "ANNOUNCEMENT",
+        important,
+        expiresAt: expiresAtValue ? new Date(`${expiresAtValue}T23:59:59.999Z`) : null,
+      })),
+    });
+  }
+
+  revalidatePath("/");
+  revalidatePath("/manager");
+  revalidatePath("/member");
+}
