@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { signIn } from "next-auth/react";
 
 const quranVerses = [
@@ -59,66 +59,121 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const [roleOptions, setRoleOptions] = useState<
     { role: string; label: string }[]
   >([]);
-  const [verse] = useState(
-    () => quranVerses[Math.floor(Math.random() * quranVerses.length)]
-  );
+  const [verse, setVerse] = useState(quranVerses[0]);
+
+  useEffect(() => {
+    setIsMounted(true);
+    setVerse(quranVerses[Math.floor(Math.random() * quranVerses.length)]);
+  }, []);
+
+  function resetLoginState() {
+    setError("");
+    setRoleOptions([]);
+  }
+
+  function getSafeRoles(data: unknown) {
+    if (!data || typeof data !== "object" || !("roles" in data)) {
+      return [];
+    }
+
+    const roles = (data as { roles?: unknown }).roles;
+
+    if (!Array.isArray(roles)) {
+      return [];
+    }
+
+    return roles
+      .filter((role): role is { role: string; label: string } => {
+        if (!role || typeof role !== "object") {
+          return false;
+        }
+
+        const option = role as { role?: unknown; label?: unknown };
+
+        return (
+          typeof option.role === "string" &&
+          typeof option.label === "string"
+        );
+      })
+      .filter((option) => ["admin", "manager", "member"].includes(option.role));
+  }
 
   async function completeSignIn(role?: string) {
     setError("");
     setIsSubmitting(true);
 
-    const result = await signIn("credentials", {
-      email,
-      password,
-      role,
-      redirect: false,
-      callbackUrl: "/",
-    });
+    try {
+      const result = await signIn("credentials", {
+        email,
+        password,
+        role,
+        redirect: false,
+        callbackUrl: "/",
+      });
 
-    setIsSubmitting(false);
+      if (!result || result.error) {
+        setRoleOptions([]);
+        setError("Invalid email or password.");
+        return;
+      }
 
-    if (result?.error) {
-      setError("Invalid email or password.");
-      return;
+      if (typeof window !== "undefined") {
+        window.location.href = result.url ?? "/";
+      }
+    } catch {
+      setRoleOptions([]);
+      setError("Unable to sign in right now. Please try again.");
+    } finally {
+      setIsSubmitting(false);
     }
-
-    window.location.href = result?.url ?? "/";
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setError("");
-    setRoleOptions([]);
+    resetLoginState();
     setIsSubmitting(true);
 
-    const response = await fetch("/api/auth/role-options", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, password }),
-    });
-    const data = (await response.json()) as {
-      roles?: { role: string; label: string }[];
-    };
-    const roles = data.roles ?? [];
+    try {
+      const response = await fetch("/api/auth/role-options", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
 
-    setIsSubmitting(false);
+      if (!response.ok) {
+        setError("Unable to check login options. Please try again.");
+        return;
+      }
 
-    if (roles.length === 0) {
-      setError("Invalid email or password.");
-      return;
+      const contentType = response.headers.get("content-type") ?? "";
+      const data = contentType.includes("application/json")
+        ? ((await response.json()) as unknown)
+        : null;
+      const roles = getSafeRoles(data);
+
+      if (roles.length === 0) {
+        setError("Invalid email or password.");
+        return;
+      }
+
+      if (roles.length === 1) {
+        await completeSignIn(roles[0].role);
+        return;
+      }
+
+      setRoleOptions(roles);
+    } catch {
+      setRoleOptions([]);
+      setError("Unable to check login options. Please try again.");
+    } finally {
+      setIsSubmitting(false);
     }
-
-    if (roles.length === 1) {
-      await completeSignIn(roles[0].role);
-      return;
-    }
-
-    setRoleOptions(roles);
   }
 
   return (
@@ -144,7 +199,10 @@ export default function LoginPage() {
             type="email"
             autoComplete="email"
             value={email}
-            onChange={(event) => setEmail(event.target.value)}
+            onChange={(event) => {
+              setEmail(event.target.value);
+              resetLoginState();
+            }}
             required
           />
         </label>
@@ -157,7 +215,10 @@ export default function LoginPage() {
             type="password"
             autoComplete="current-password"
             value={password}
-            onChange={(event) => setPassword(event.target.value)}
+            onChange={(event) => {
+              setPassword(event.target.value);
+              resetLoginState();
+            }}
             required
           />
         </label>
@@ -174,6 +235,7 @@ export default function LoginPage() {
                 key={option.role}
                 type="button"
                 onClick={() => completeSignIn(option.role)}
+                disabled={isSubmitting}
                 className="rounded-md border border-[#A05DD0]/40 bg-white px-3 py-2 text-left text-sm font-medium text-[#770FC2] transition hover:bg-[#F3E8FF]"
               >
                 {option.label}
@@ -183,9 +245,9 @@ export default function LoginPage() {
         ) : null}
 
         <blockquote className="rounded-md border border-[#E5E7EB] bg-[#F8F7FB] p-4 text-sm leading-6 text-[#4B5563]">
-          <p>&quot;{verse.text}&quot;</p>
+          <p>&quot;{isMounted ? verse.text : quranVerses[0].text}&quot;</p>
           <footer className="mt-2 text-xs font-medium text-[#770FC2]">
-            - {verse.reference}
+            - {isMounted ? verse.reference : quranVerses[0].reference}
           </footer>
         </blockquote>
 
