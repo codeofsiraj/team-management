@@ -4,6 +4,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import DeleteEmployeeButton from "@/components/employees/DeleteEmployeeButton";
+import ActionMenu from "@/components/ui/ActionMenu";
 import PaginationControls from "@/components/layout/PaginationControls";
 import { getPage, getPagination, PAGE_SIZE } from "@/lib/pagination";
 
@@ -93,7 +94,9 @@ export default async function EmployeesPage({ searchParams }: EmployeesPageProps
                     <th className="px-4 py-3 font-semibold">Email</th>
                     <th className="px-4 py-3 font-semibold">Role</th>
                     <th className="px-4 py-3 font-semibold">Created Date</th>
-                    <th className="px-4 py-3 font-semibold">Actions</th>
+                    <th className="px-4 py-3 font-semibold">
+                      <span className="sr-only">Actions</span>
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-200">
@@ -115,15 +118,15 @@ export default async function EmployeesPage({ searchParams }: EmployeesPageProps
                       </td>
                       <td className="px-4 py-4">
                         {isAdmin ? (
-                          <div className="flex items-center gap-4">
+                          <ActionMenu>
                             <Link
                               href={`/employees/${employee.id}/edit`}
-                              className="text-sm font-medium text-slate-700 transition hover:text-slate-950"
+                              className="rounded px-3 py-2 text-sm text-[#1F2937] transition hover:bg-[#F3E8FF] hover:text-[#770FC2]"
                             >
                               Edit
                             </Link>
                             <DeleteEmployeeButton employeeId={employee.id} />
-                          </div>
+                          </ActionMenu>
                         ) : (
                           <span className="text-sm text-slate-400">
                             View only

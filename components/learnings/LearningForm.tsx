@@ -1,3 +1,5 @@
+import TextareaWithBullet from "@/components/ui/TextareaWithBullet";
+
 type LearningFormProps = {
   action: (formData: FormData) => void | Promise<void>;
   submitLabel: string;
@@ -44,12 +46,11 @@ export default function LearningForm({
           <span className="text-sm font-medium text-slate-700">
             Description
           </span>
-          <textarea
+          <TextareaWithBullet
             name="description"
             defaultValue={learning?.description ?? ""}
             rows={4}
             required
-            className="resize-none rounded-md border border-slate-300 px-3 py-2 text-sm"
           />
         </label>
         <label className="grid gap-2">

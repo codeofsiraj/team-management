@@ -1,3 +1,5 @@
+import TextareaWithBullet from "@/components/ui/TextareaWithBullet";
+
 type TeamFormProps = {
   action: (formData: FormData) => void | Promise<void>;
   submitLabel: string;
@@ -47,7 +49,7 @@ export default function TeamForm({
           <span className="text-sm font-medium text-slate-700">
             Description
           </span>
-          <textarea
+          <TextareaWithBullet
             name="description"
             defaultValue={team?.description ?? ""}
             rows={4}

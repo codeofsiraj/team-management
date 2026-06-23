@@ -132,7 +132,7 @@ export async function deleteEmployee(id: string) {
   const sessionUser = await requireAdmin();
 
   if (sessionUser.id === id) {
-    throw new Error("You cannot delete your own admin account.");
+    throw new Error("You cannot delete your own account.");
   }
 
   try {

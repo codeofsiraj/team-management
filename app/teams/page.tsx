@@ -6,6 +6,7 @@ import DashboardLayout from "@/components/layout/DashboardLayout";
 import DeleteTeamButton from "@/components/teams/DeleteTeamButton";
 import PaginationControls from "@/components/layout/PaginationControls";
 import { getPage, getPagination, PAGE_SIZE } from "@/lib/pagination";
+import ActionMenu from "@/components/ui/ActionMenu";
 
 const dateFormatter = new Intl.DateTimeFormat("en", {
   year: "numeric",
@@ -97,8 +98,10 @@ export default async function TeamsPage({ searchParams }: TeamsPageProps) {
                     <th className="px-4 py-3 font-semibold">Name</th>
                     <th className="px-4 py-3 font-semibold">Description</th>
                     <th className="px-4 py-3 font-semibold">Member Count</th>
-                    <th className="px-4 py-3 font-semibold">Created Date</th>
-                    <th className="px-4 py-3 font-semibold">Actions</th>
+                    <th className="px-4 py-3 font-semibold">Created On</th>
+                    <th className="px-4 py-3 font-semibold">
+                      <span className="sr-only">Actions</span>
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-200">
@@ -125,15 +128,15 @@ export default async function TeamsPage({ searchParams }: TeamsPageProps) {
                       </td>
                       <td className="px-4 py-4">
                         {isAdmin ? (
-                          <div className="flex items-center gap-4">
+                          <ActionMenu>
                             <Link
                               href={`/teams/${team.id}/edit`}
-                              className="text-sm font-medium text-slate-700 transition hover:text-slate-950"
+                              className="rounded px-3 py-2 text-sm text-[#1F2937] transition hover:bg-[#F3E8FF] hover:text-[#770FC2]"
                             >
                               Edit
                             </Link>
                             <DeleteTeamButton teamId={team.id} />
-                          </div>
+                          </ActionMenu>
                         ) : (
                           <span className="text-sm text-slate-400">
                             View only

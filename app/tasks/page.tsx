@@ -9,6 +9,7 @@ import { updateOwnTaskStatus } from "@/app/tasks/actions";
 import PaginationControls from "@/components/layout/PaginationControls";
 import { getPage, getPagination, PAGE_SIZE } from "@/lib/pagination";
 import ModuleReviewMarker from "@/components/layout/ModuleReviewMarker";
+import ActionMenu from "@/components/ui/ActionMenu";
 
 const dateFormatter = new Intl.DateTimeFormat("en", {
   year: "numeric",
@@ -274,8 +275,10 @@ export default async function TasksPage({ searchParams }: TasksPageProps) {
                     <th className="px-4 py-3 font-semibold">Team</th>
                     <th className="px-4 py-3 font-semibold">Status</th>
                     <th className="px-4 py-3 font-semibold">Priority</th>
-                    <th className="px-4 py-3 font-semibold">Created Date</th>
-                    <th className="px-4 py-3 font-semibold">Actions</th>
+                    <th className="px-4 py-3 font-semibold">Created On</th>
+                    <th className="px-4 py-3 font-semibold">
+                      <span className="sr-only">Actions</span>
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-200">
@@ -291,26 +294,9 @@ export default async function TasksPage({ searchParams }: TasksPageProps) {
                         {task.team?.name ?? "No team"}
                       </td>
                       <td className="px-4 py-4">
-                        <form action={updateOwnTaskStatus} className="flex gap-2">
-                          <input type="hidden" name="id" value={task.id} />
-                          <select
-                            name="status"
-                            defaultValue={task.status}
-                            className="rounded-md border border-slate-300 px-2 py-1 text-xs"
-                          >
-                            {statusOptions.map((status) => (
-                              <option key={status} value={status}>
-                                {formatLabel(status)}
-                              </option>
-                            ))}
-                          </select>
-                          <button
-                            type="submit"
-                            className="rounded-md border border-slate-300 px-2 py-1 text-xs font-medium text-slate-700 transition hover:bg-slate-50"
-                          >
-                            Save
-                          </button>
-                        </form>
+                        <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-700">
+                          {formatLabel(task.status)}
+                        </span>
                       </td>
                       <td className="px-4 py-4">
                         <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium capitalize text-slate-700">
@@ -318,26 +304,47 @@ export default async function TasksPage({ searchParams }: TasksPageProps) {
                         </span>
                       </td>
                       <td className="px-4 py-4 text-slate-600">
-                        {dateFormatter.format(task.createdAt)}
+                        <div>{dateFormatter.format(task.createdAt)}</div>
+                        {task.updatedAt.getTime() !== task.createdAt.getTime() ? (
+                          <div className="mt-1 text-xs text-slate-500">
+                            Edited on {dateFormatter.format(task.updatedAt)}
+                          </div>
+                        ) : null}
                       </td>
                       <td className="px-4 py-4">
-                        {canManageTasks ? (
-                          <div className="flex items-center gap-4">
+                        <ActionMenu>
+                          <form action={updateOwnTaskStatus} className="grid gap-2 p-2">
+                            <input type="hidden" name="id" value={task.id} />
+                            <select
+                              name="status"
+                              defaultValue={task.status}
+                              className="rounded-md border border-slate-300 px-2 py-1 text-xs"
+                            >
+                              {statusOptions.map((status) => (
+                                <option key={status} value={status}>
+                                  {formatLabel(status)}
+                                </option>
+                              ))}
+                            </select>
+                            <button
+                              type="submit"
+                              className="rounded-md bg-slate-950 px-2 py-1 text-xs font-medium text-white"
+                            >
+                              Update status
+                            </button>
+                          </form>
+                          {canManageTasks ? (
                             <Link
                               href={`/tasks/${task.id}/edit`}
-                              className="text-sm font-medium text-slate-700 transition hover:text-slate-950"
+                              className="rounded px-3 py-2 text-sm text-[#1F2937] transition hover:bg-[#F3E8FF] hover:text-[#770FC2]"
                             >
                               Edit
                             </Link>
+                          ) : null}
                             {canDeleteTasks ? (
                               <DeleteTaskButton taskId={task.id} />
                             ) : null}
-                          </div>
-                        ) : (
-                          <span className="text-sm text-slate-400">
-                            View only
-                          </span>
-                        )}
+                        </ActionMenu>
                       </td>
                     </tr>
                   ))}

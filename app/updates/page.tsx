@@ -6,6 +6,9 @@ import DashboardLayout from "@/components/layout/DashboardLayout";
 import PaginationControls from "@/components/layout/PaginationControls";
 import { getPage, getPagination, PAGE_SIZE } from "@/lib/pagination";
 import ModuleReviewMarker from "@/components/layout/ModuleReviewMarker";
+import ActionMenu from "@/components/ui/ActionMenu";
+import DeleteMenuAction from "@/components/ui/DeleteMenuAction";
+import { deleteDailyUpdate } from "@/app/updates/actions";
 
 const dateFormatter = new Intl.DateTimeFormat("en-GB", {
   year: "numeric",
@@ -98,20 +101,27 @@ export default async function UpdatesPage({ searchParams }: UpdatesPageProps) {
               <table className="w-full min-w-[820px] text-left text-sm">
                 <thead className="border-b border-slate-200 bg-slate-50 text-xs uppercase tracking-normal text-slate-500">
                   <tr>
-                    <th className="px-4 py-3 font-semibold">Date</th>
+                    <th className="px-4 py-3 font-semibold">Created On</th>
                     {showEmployeeColumn ? (
                       <th className="px-4 py-3 font-semibold">Employee</th>
                     ) : null}
-                    <th className="px-4 py-3 font-semibold">Worked On</th>
+                    <th className="px-4 py-3 font-semibold">Today&apos;s Tasks</th>
                     <th className="px-4 py-3 font-semibold">Blockers</th>
-                    <th className="px-4 py-3 font-semibold">Actions</th>
+                    <th className="px-4 py-3 font-semibold">
+                      <span className="sr-only">Actions</span>
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-200">
                   {updates.map((update) => (
                     <tr key={update.id} className="hover:bg-slate-50">
                       <td className="px-4 py-4 text-slate-600">
-                        {dateFormatter.format(update.date)}
+                        <div>{dateFormatter.format(update.createdAt)}</div>
+                        {update.updatedAt.getTime() !== update.createdAt.getTime() ? (
+                          <div className="mt-1 text-xs text-slate-500">
+                            Edited on {dateFormatter.format(update.updatedAt)}
+                          </div>
+                        ) : null}
                       </td>
                       {showEmployeeColumn ? (
                         <td className="px-4 py-4 font-medium text-slate-950">
@@ -119,26 +129,26 @@ export default async function UpdatesPage({ searchParams }: UpdatesPageProps) {
                         </td>
                       ) : null}
                       <td className="px-4 py-4 text-slate-600">
-                        {update.workedOn}
+                        <div className="whitespace-pre-line">{update.todaysTasks}</div>
                       </td>
                       <td className="px-4 py-4 text-slate-600">
-                        {update.blockers || "None"}
+                        <div className="whitespace-pre-line">{update.blockers || "None"}</div>
                       </td>
                       <td className="px-4 py-4">
                         {update.user.id === sessionUser.id ? (
-                          <div className="flex flex-col gap-1">
+                          <ActionMenu>
                             <Link
                               href={`/updates/${update.id}/edit`}
-                              className="text-sm font-medium text-slate-700 transition hover:text-slate-950"
+                              className="rounded px-3 py-2 text-sm text-[#1F2937] transition hover:bg-[#F3E8FF] hover:text-[#770FC2]"
                             >
                               Edit
                             </Link>
-                            {update.updatedAt.getTime() !== update.createdAt.getTime() ? (
-                              <span className="text-xs text-slate-500">
-                                (Edited on {dateFormatter.format(update.updatedAt)})
-                              </span>
-                            ) : null}
-                          </div>
+                            <DeleteMenuAction
+                              id={update.id}
+                              action={deleteDailyUpdate}
+                              message="Are you sure you want to delete this daily update?"
+                            />
+                          </ActionMenu>
                         ) : (
                           <span className="text-sm text-slate-400">
                             View only

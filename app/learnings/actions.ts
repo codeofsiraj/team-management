@@ -127,3 +127,27 @@ export async function updateLearning(formData: FormData) {
   revalidatePath("/learnings");
   redirect("/learnings");
 }
+
+export async function deleteLearning(id: string) {
+  const sessionUser = await getSessionUser();
+  const existing = await prisma.learning.findUnique({
+    where: { id },
+    select: { userId: true },
+  });
+
+  if (!existing) {
+    throw new Error("Learning not found.");
+  }
+
+  if (existing.userId !== sessionUser.id) {
+    redirect("/learnings");
+  }
+
+  try {
+    await prisma.learning.delete({ where: { id } });
+  } catch (error) {
+    handleLearningError(error);
+  }
+
+  revalidatePath("/learnings");
+}

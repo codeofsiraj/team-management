@@ -1,3 +1,5 @@
+import TextareaWithBullet from "@/components/ui/TextareaWithBullet";
+
 type TaskFormProps = {
   action: (formData: FormData) => void | Promise<void>;
   submitLabel: string;
@@ -63,7 +65,7 @@ export default function TaskForm({
           <span className="text-sm font-medium text-slate-700">
             Description
           </span>
-          <textarea
+          <TextareaWithBullet
             name="description"
             defaultValue={task?.description ?? ""}
             rows={4}

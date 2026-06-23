@@ -106,3 +106,22 @@ export async function updateToolUsage(formData: FormData) {
   revalidatePath("/tools");
   redirect("/tools");
 }
+
+export async function deleteToolUsage(id: string) {
+  const sessionUser = await getSessionUser();
+  const existing = await prisma.toolUsage.findUnique({
+    where: { id },
+    select: { userId: true },
+  });
+
+  if (!existing) throw new Error("Tool usage entry not found.");
+  if (existing.userId !== sessionUser.id) redirect("/tools");
+
+  try {
+    await prisma.toolUsage.delete({ where: { id } });
+  } catch (error) {
+    handleToolError(error);
+  }
+
+  revalidatePath("/tools");
+}

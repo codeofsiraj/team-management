@@ -1,13 +1,13 @@
+import TextareaWithBullet from "@/components/ui/TextareaWithBullet";
+
 type DailyUpdateFormProps = {
   action: (formData: FormData) => void | Promise<void>;
   submitLabel: string;
   update?: {
     id: string;
     date: Date;
-    workedOn: string;
-    completedTasks: string | null;
+    todaysTasks: string;
     blockers: string | null;
-    tomorrowPlan: string | null;
   };
 };
 
@@ -34,48 +34,24 @@ export default function DailyUpdateForm({
             type="date"
             defaultValue={formatDateInput(update?.date)}
             required
-            className="rounded-md border border-slate-300 px-3 py-2 text-sm"
+            className="w-full cursor-pointer rounded-md border border-slate-300 px-3 py-2 text-sm"
           />
         </label>
         <label className="grid gap-2">
-          <span className="text-sm font-medium text-slate-700">Worked On</span>
-          <textarea
-            name="workedOn"
-            defaultValue={update?.workedOn ?? ""}
+          <span className="text-sm font-medium text-slate-700">Today&apos;s Tasks</span>
+          <TextareaWithBullet
+            name="todaysTasks"
+            defaultValue={update?.todaysTasks ?? ""}
             rows={4}
             required
-            className="resize-none rounded-md border border-slate-300 px-3 py-2 text-sm"
-          />
-        </label>
-        <label className="grid gap-2">
-          <span className="text-sm font-medium text-slate-700">
-            Completed Tasks
-          </span>
-          <textarea
-            name="completedTasks"
-            defaultValue={update?.completedTasks ?? ""}
-            rows={3}
-            className="resize-none rounded-md border border-slate-300 px-3 py-2 text-sm"
           />
         </label>
         <label className="grid gap-2">
           <span className="text-sm font-medium text-slate-700">Blockers</span>
-          <textarea
+          <TextareaWithBullet
             name="blockers"
             defaultValue={update?.blockers ?? ""}
             rows={3}
-            className="resize-none rounded-md border border-slate-300 px-3 py-2 text-sm"
-          />
-        </label>
-        <label className="grid gap-2">
-          <span className="text-sm font-medium text-slate-700">
-            Tomorrow Plan
-          </span>
-          <textarea
-            name="tomorrowPlan"
-            defaultValue={update?.tomorrowPlan ?? ""}
-            rows={3}
-            className="resize-none rounded-md border border-slate-300 px-3 py-2 text-sm"
           />
         </label>
       </div>

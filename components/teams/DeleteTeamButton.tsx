@@ -32,7 +32,7 @@ export default function DeleteTeamButton({ teamId }: DeleteTeamButtonProps) {
       type="button"
       onClick={handleDelete}
       disabled={isPending}
-      className="text-sm font-medium text-red-600 transition hover:text-red-700 disabled:opacity-60"
+      className="rounded px-3 py-2 text-left text-sm text-red-600 transition hover:bg-red-50 disabled:opacity-60"
     >
       {isPending ? "Deleting..." : "Delete"}
     </button>

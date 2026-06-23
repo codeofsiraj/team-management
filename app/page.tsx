@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import StatCard from "@/components/dashboard/StatCard";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { createBroadcastNotification } from "@/app/notifications/actions";
+import TextareaWithBullet from "@/components/ui/TextareaWithBullet";
 
 export default async function Home() {
   const session = await auth();
@@ -126,9 +127,8 @@ export default async function Home() {
               required
               className="rounded-md border border-slate-300 px-3 py-2 text-sm"
             />
-            <textarea
+            <TextareaWithBullet
               name="message"
-              placeholder="Message"
               required
               rows={3}
               className="resize-none rounded-md border border-slate-300 px-3 py-2 text-sm"

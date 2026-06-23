@@ -1,3 +1,5 @@
+import TextareaWithBullet from "@/components/ui/TextareaWithBullet";
+
 type ToolUsageFormProps = {
   action: (formData: FormData) => void | Promise<void>;
   submitLabel: string;
@@ -25,9 +27,9 @@ export default function ToolUsageForm({ action, submitLabel, entry }: ToolUsageF
       <div className="grid gap-5">
         <label className="grid gap-2"><span className="text-sm font-medium text-slate-700">Tool Name</span><input name="toolName" defaultValue={entry?.toolName} required className="rounded-md border border-slate-300 px-3 py-2 text-sm" /></label>
         <label className="grid gap-2"><span className="text-sm font-medium text-slate-700">Category</span><select name="category" defaultValue={entry?.category ?? "AI Assistant"} required className="rounded-md border border-slate-300 px-3 py-2 text-sm">{categories.map((category) => <option key={category} value={category}>{category}</option>)}</select></label>
-        <label className="grid gap-2"><span className="text-sm font-medium text-slate-700">Purpose</span><textarea name="purpose" defaultValue={entry?.purpose ?? ""} rows={3} required className="resize-none rounded-md border border-slate-300 px-3 py-2 text-sm" /></label>
+        <label className="grid gap-2"><span className="text-sm font-medium text-slate-700">Purpose</span><TextareaWithBullet name="purpose" defaultValue={entry?.purpose ?? ""} rows={3} required /></label>
         <label className="grid gap-2"><span className="text-sm font-medium text-slate-700">Time Spent</span><input name="timeSpent" defaultValue={entry?.timeSpent} required className="rounded-md border border-slate-300 px-3 py-2 text-sm" /></label>
-        <label className="grid gap-2"><span className="text-sm font-medium text-slate-700">Outcome</span><textarea name="outcome" defaultValue={entry?.outcome ?? ""} rows={3} className="resize-none rounded-md border border-slate-300 px-3 py-2 text-sm" /></label>
+        <label className="grid gap-2"><span className="text-sm font-medium text-slate-700">Outcome</span><TextareaWithBullet name="outcome" defaultValue={entry?.outcome ?? ""} rows={3} /></label>
         <label className="grid gap-2"><span className="text-sm font-medium text-slate-700">Date</span><input name="date" type="date" defaultValue={formatDateInput(entry?.date)} required className="rounded-md border border-slate-300 px-3 py-2 text-sm" /></label>
       </div>
       <div className="mt-6 flex justify-end"><button type="submit" className="rounded-md bg-slate-950 px-4 py-2 text-sm font-medium text-white">{submitLabel}</button></div>

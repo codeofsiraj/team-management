@@ -43,13 +43,11 @@ function handleUpdateError(error: unknown): never {
 export async function createDailyUpdate(formData: FormData) {
   const sessionUser = await getSessionUser();
   const date = getValue(formData, "date");
-  const workedOn = getValue(formData, "workedOn");
-  const completedTasks = getValue(formData, "completedTasks");
+  const todaysTasks = getValue(formData, "todaysTasks");
   const blockers = getValue(formData, "blockers");
-  const tomorrowPlan = getValue(formData, "tomorrowPlan");
 
-  if (!date || !workedOn) {
-    throw new Error("Date and worked on are required.");
+  if (!date || !todaysTasks) {
+    throw new Error("Date and today's tasks are required.");
   }
 
   try {
@@ -57,10 +55,8 @@ export async function createDailyUpdate(formData: FormData) {
       data: {
         userId: sessionUser.id,
         date: new Date(`${date}T00:00:00.000Z`),
-        workedOn,
-        completedTasks: completedTasks || null,
+        todaysTasks,
         blockers: blockers || null,
-        tomorrowPlan: tomorrowPlan || null,
       },
       select: { id: true },
     });
@@ -108,13 +104,11 @@ export async function updateDailyUpdate(formData: FormData) {
   const sessionUser = await getSessionUser();
   const id = getValue(formData, "id");
   const date = getValue(formData, "date");
-  const workedOn = getValue(formData, "workedOn");
-  const completedTasks = getValue(formData, "completedTasks");
+  const todaysTasks = getValue(formData, "todaysTasks");
   const blockers = getValue(formData, "blockers");
-  const tomorrowPlan = getValue(formData, "tomorrowPlan");
 
-  if (!id || !date || !workedOn) {
-    throw new Error("Date and worked on are required.");
+  if (!id || !date || !todaysTasks) {
+    throw new Error("Date and today's tasks are required.");
   }
 
   const existing = await prisma.dailyUpdate.findUnique({
@@ -135,10 +129,8 @@ export async function updateDailyUpdate(formData: FormData) {
       where: { id },
       data: {
         date: new Date(`${date}T00:00:00.000Z`),
-        workedOn,
-        completedTasks: completedTasks || null,
+        todaysTasks,
         blockers: blockers || null,
-        tomorrowPlan: tomorrowPlan || null,
       },
     });
   } catch (error) {
@@ -147,4 +139,28 @@ export async function updateDailyUpdate(formData: FormData) {
 
   revalidatePath("/updates");
   redirect("/updates");
+}
+
+export async function deleteDailyUpdate(id: string) {
+  const sessionUser = await getSessionUser();
+  const existing = await prisma.dailyUpdate.findUnique({
+    where: { id },
+    select: { userId: true },
+  });
+
+  if (!existing) {
+    throw new Error("Daily update not found.");
+  }
+
+  if (existing.userId !== sessionUser.id) {
+    redirect("/updates");
+  }
+
+  try {
+    await prisma.dailyUpdate.delete({ where: { id } });
+  } catch (error) {
+    handleUpdateError(error);
+  }
+
+  revalidatePath("/updates");
 }

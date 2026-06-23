@@ -7,6 +7,15 @@ import DashboardLayout from "@/components/layout/DashboardLayout";
 import PaginationControls from "@/components/layout/PaginationControls";
 import { getPage, getPagination, PAGE_SIZE } from "@/lib/pagination";
 import ModuleReviewMarker from "@/components/layout/ModuleReviewMarker";
+import ActionMenu from "@/components/ui/ActionMenu";
+import DeleteMenuAction from "@/components/ui/DeleteMenuAction";
+import { deleteLearning } from "@/app/learnings/actions";
+
+const dateFormatter = new Intl.DateTimeFormat("en-GB", {
+  year: "numeric",
+  day: "numeric",
+  month: "short",
+});
 
 type LearningsPageProps = {
   searchParams: Promise<{ q?: string; page?: string }>;
@@ -123,7 +132,10 @@ export default async function LearningsPage({
                     <th className="px-4 py-3 font-semibold">Employee</th>
                     <th className="px-4 py-3 font-semibold">Category</th>
                     <th className="px-4 py-3 font-semibold">Reference</th>
-                    <th className="px-4 py-3 font-semibold">Actions</th>
+                    <th className="px-4 py-3 font-semibold">Created On</th>
+                    <th className="px-4 py-3 font-semibold">
+                      <span className="sr-only">Actions</span>
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-200">
@@ -133,7 +145,7 @@ export default async function LearningsPage({
                         <div className="font-medium text-slate-950">
                           {learning.title}
                         </div>
-                        <div className="mt-1 text-slate-500">
+                        <div className="mt-1 whitespace-pre-line text-slate-500">
                           {learning.description}
                         </div>
                       </td>
@@ -158,13 +170,30 @@ export default async function LearningsPage({
                         )}
                       </td>
                       <td className="px-4 py-4">
+                        <div className="text-slate-600">
+                          {dateFormatter.format(learning.createdAt)}
+                        </div>
+                        {learning.updatedAt.getTime() !== learning.createdAt.getTime() ? (
+                          <div className="mt-1 text-xs text-slate-500">
+                            Edited on {dateFormatter.format(learning.updatedAt)}
+                          </div>
+                        ) : null}
+                      </td>
+                      <td className="px-4 py-4">
                         {learning.user.id === sessionUser.id ? (
-                          <Link
-                            href={`/learnings/${learning.id}/edit`}
-                            className="text-sm font-medium text-slate-700 hover:text-slate-950"
-                          >
-                            Edit
-                          </Link>
+                          <ActionMenu>
+                            <Link
+                              href={`/learnings/${learning.id}/edit`}
+                              className="rounded px-3 py-2 text-sm text-[#1F2937] transition hover:bg-[#F3E8FF] hover:text-[#770FC2]"
+                            >
+                              Edit
+                            </Link>
+                            <DeleteMenuAction
+                              id={learning.id}
+                              action={deleteLearning}
+                              message="Are you sure you want to delete this learning?"
+                            />
+                          </ActionMenu>
                         ) : (
                           <span className="text-sm text-slate-400">
                             View only
