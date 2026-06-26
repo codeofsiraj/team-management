@@ -108,7 +108,7 @@ export default async function UpdatesPage({ searchParams }: UpdatesPageProps) {
                     <th className="px-4 py-3 font-semibold">Today&apos;s Tasks</th>
                     <th className="px-4 py-3 font-semibold">Blockers</th>
                     <th className="px-4 py-3 font-semibold">
-                      <span className="sr-only">Actions</span>
+                      <span className="sr-only">Row menu</span>
                     </th>
                   </tr>
                 </thead>
@@ -129,10 +129,10 @@ export default async function UpdatesPage({ searchParams }: UpdatesPageProps) {
                         </td>
                       ) : null}
                       <td className="px-4 py-4 text-slate-600">
-                        <div className="whitespace-pre-line">{update.todaysTasks}</div>
+                        <div className="whitespace-pre-line break-words">{update.todaysTasks}</div>
                       </td>
                       <td className="px-4 py-4 text-slate-600">
-                        <div className="whitespace-pre-line">{update.blockers || "None"}</div>
+                        <div className="whitespace-pre-line break-words">{update.blockers || "None"}</div>
                       </td>
                       <td className="px-4 py-4">
                         {update.user.id === sessionUser.id ? (

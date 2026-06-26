@@ -36,6 +36,7 @@ export default async function LearningsPage({
   };
   const { q } = await searchParams;
   const page = getPage((await searchParams).page);
+  const showEmployeeColumn = sessionUser.role !== "member";
   const currentUser =
     sessionUser.role === "manager"
       ? await prisma.user.findUnique({
@@ -125,16 +126,18 @@ export default async function LearningsPage({
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full min-w-[920px] text-left text-sm">
+              <table className="w-full min-w-[820px] text-left text-sm">
                 <thead className="border-b border-slate-200 bg-slate-50 text-xs uppercase tracking-normal text-slate-500">
                   <tr>
                     <th className="px-4 py-3 font-semibold">Title</th>
-                    <th className="px-4 py-3 font-semibold">Employee</th>
+                    {showEmployeeColumn ? (
+                      <th className="px-4 py-3 font-semibold">Employee</th>
+                    ) : null}
                     <th className="px-4 py-3 font-semibold">Category</th>
                     <th className="px-4 py-3 font-semibold">Reference</th>
                     <th className="px-4 py-3 font-semibold">Created On</th>
                     <th className="px-4 py-3 font-semibold">
-                      <span className="sr-only">Actions</span>
+                      <span className="sr-only">Row menu</span>
                     </th>
                   </tr>
                 </thead>
@@ -145,13 +148,15 @@ export default async function LearningsPage({
                         <div className="font-medium text-slate-950">
                           {learning.title}
                         </div>
-                        <div className="mt-1 whitespace-pre-line text-slate-500">
+                        <div className="mt-1 whitespace-pre-line break-words text-slate-500">
                           {learning.description}
                         </div>
                       </td>
-                      <td className="px-4 py-4 text-slate-600">
-                        {learning.user.name}
-                      </td>
+                      {showEmployeeColumn ? (
+                        <td className="px-4 py-4 text-slate-600">
+                          {learning.user.name}
+                        </td>
+                      ) : null}
                       <td className="px-4 py-4 text-slate-600">
                         {learning.category}
                       </td>

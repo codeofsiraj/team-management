@@ -277,15 +277,22 @@ export default async function TasksPage({ searchParams }: TasksPageProps) {
                     <th className="px-4 py-3 font-semibold">Priority</th>
                     <th className="px-4 py-3 font-semibold">Created On</th>
                     <th className="px-4 py-3 font-semibold">
-                      <span className="sr-only">Actions</span>
+                      <span className="sr-only">Row menu</span>
                     </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-200">
                   {tasks.map((task) => (
                     <tr key={task.id} className="hover:bg-slate-50">
-                      <td className="px-4 py-4 font-medium text-slate-950">
-                        {task.title}
+                      <td className="px-4 py-4">
+                        <div className="font-medium text-slate-950">
+                          {task.title}
+                        </div>
+                        {task.description ? (
+                          <div className="mt-1 whitespace-pre-line break-words text-slate-500">
+                            {task.description}
+                          </div>
+                        ) : null}
                       </td>
                       <td className="px-4 py-4 text-slate-600">
                         {task.assignedTo?.name ?? "Unassigned"}

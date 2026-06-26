@@ -100,7 +100,7 @@ export default async function TeamsPage({ searchParams }: TeamsPageProps) {
                     <th className="px-4 py-3 font-semibold">Member Count</th>
                     <th className="px-4 py-3 font-semibold">Created On</th>
                     <th className="px-4 py-3 font-semibold">
-                      <span className="sr-only">Actions</span>
+                      <span className="sr-only">Row menu</span>
                     </th>
                   </tr>
                 </thead>
@@ -111,7 +111,9 @@ export default async function TeamsPage({ searchParams }: TeamsPageProps) {
                         {team.name}
                       </td>
                       <td className="px-4 py-4 text-slate-600">
-                        <div>{team.description || "No description"}</div>
+                        <div className="whitespace-pre-line break-words">
+                          {team.description || "No description"}
+                        </div>
                         <div className="mt-1 text-xs text-slate-400">
                           {team.members.length > 0
                             ? team.members

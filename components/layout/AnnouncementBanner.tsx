@@ -79,7 +79,7 @@ export default function AnnouncementBanner({
               <p className="text-sm font-semibold text-[#1F2937]">
                 {announcement.title}
               </p>
-              <p className="mt-1 text-sm text-[#6B7280]">
+              <p className="mt-1 whitespace-pre-line break-words text-sm text-[#6B7280]">
                 {announcement.message}
               </p>
             </div>

@@ -95,7 +95,7 @@ export default async function EmployeesPage({ searchParams }: EmployeesPageProps
                     <th className="px-4 py-3 font-semibold">Role</th>
                     <th className="px-4 py-3 font-semibold">Created Date</th>
                     <th className="px-4 py-3 font-semibold">
-                      <span className="sr-only">Actions</span>
+                      <span className="sr-only">Row menu</span>
                     </th>
                   </tr>
                 </thead>
