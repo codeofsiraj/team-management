@@ -62,10 +62,10 @@ model DailyUpdate {
   id             String   @id @default(cuid())
   userId         String
   date           DateTime
-  todaysTasks    String   @map("workedOn")
-  completedTasks String?
-  blockers       String?
-  tomorrowPlan   String?
+  todaysTasks    String   @map("workedOn") @db.Text
+  completedTasks String?  @db.Text
+  blockers       String?  @db.Text
+  tomorrowPlan   String?  @db.Text
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
   user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
