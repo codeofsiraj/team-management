@@ -1,12 +1,18 @@
 import { prisma } from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
+import { sendPushToUser } from "@/lib/pushNotifications";
 
 type NotificationType =
   | "TASK_ASSIGNED"
   | "TASK_UPDATED"
   | "TASK_COMPLETED"
   | "DAILY_UPDATE_CREATED"
-  | "ANNOUNCEMENT";
+  | "ANNOUNCEMENT"
+  | "FEEDBACK_SUBMITTED"
+  | "FEEDBACK_UPDATED"
+  | "ATTENDANCE_UPDATED"
+  | "LEARNING_UPDATED"
+  | "TOOL_USAGE_UPDATED";
 
 type NotificationInput = {
   userId: string;
@@ -18,7 +24,14 @@ type NotificationInput = {
 const visibleNotificationTypes = [
   "ANNOUNCEMENT",
   "TASK_ASSIGNED",
+  "TASK_UPDATED",
+  "TASK_COMPLETED",
   "DAILY_UPDATE_CREATED",
+  "FEEDBACK_SUBMITTED",
+  "FEEDBACK_UPDATED",
+  "ATTENDANCE_UPDATED",
+  "LEARNING_UPDATED",
+  "TOOL_USAGE_UPDATED",
 ];
 
 export function getVisibleNotificationWhere(
@@ -48,6 +61,12 @@ export async function createNotification({
       type,
     },
   });
+
+  await sendPushToUser(userId, {
+    title,
+    body: message,
+    url: "/notifications",
+  });
 }
 
 export async function createAnnouncementNotifications(
@@ -72,4 +91,14 @@ export async function createAnnouncementNotifications(
       type: "ANNOUNCEMENT",
     })),
   });
+
+  await Promise.all(
+    users.map((user) =>
+      sendPushToUser(user.id, {
+        title,
+        body: message,
+        url: "/",
+      })
+    )
+  );
 }

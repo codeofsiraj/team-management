@@ -18,10 +18,13 @@ model User {
   teamId               String?
   activityLogs         ActivityLog[]
   announcementsCreated Announcement[]
+  attendanceRecords    AttendanceRecord[]
   dailyUpdates         DailyUpdate[]
+  feedbackSubmissions  FeedbackSubmission[]
   learnings            Learning[]
   notifications        Notification[]
   moduleReviews        ModuleReview[]
+  pushSubscriptions    PushSubscription[]
   researchDocs         ResearchDocument[]
   tasks                Task[]             @relation("AssignedTasks")
   toolUsages           ToolUsage[]
@@ -168,4 +171,59 @@ model Announcement {
   createdBy   User     @relation(fields: [createdById], references: [id], onDelete: Cascade)
 
   @@index([createdById], map: "Announcement_createdById_fkey")
+}
+
+model FeedbackSubmission {
+  id            String   @id @default(cuid())
+  userId        String
+  type          String
+  title         String
+  description   String   @db.Text
+  priority      String   @default("Medium")
+  status        String   @default("Open")
+  adminResponse String?  @db.Text
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([type])
+  @@index([status])
+}
+
+model AttendanceRecord {
+  id                    String    @id @default(cuid())
+  userId                String
+  date                  DateTime
+  scheduledStartTime    String    @default("09:00")
+  actualCheckInTime     DateTime?
+  scheduledEndTime      String    @default("18:00")
+  actualCheckOutTime    DateTime?
+  status                String    @default("Pending")
+  lateDurationMinutes   Int?
+  earlyDepartureMinutes Int?
+  notes                 String?   @db.Text
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+  @@index([date])
+  @@index([status])
+}
+
+model PushSubscription {
+  id           String   @id @default(cuid())
+  userId       String
+  endpointHash String   @unique
+  endpoint     String   @db.Text
+  p256dh       String   @db.Text
+  auth         String   @db.Text
+  userAgent    String?
+  enabled      Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
