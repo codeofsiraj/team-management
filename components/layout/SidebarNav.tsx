@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import LogoutButton from "@/components/layout/LogoutButton";
+import PushNotificationToggle from "@/components/notifications/PushNotificationToggle";
 
 type NavItem = {
   label: string;
@@ -52,8 +53,11 @@ export default function SidebarNav({
           </Link>
         );
       })}
-      <div className="min-w-fit pl-3 lg:mt-3">
-        <LogoutButton />
+      <div className="flex flex-col gap-2 pt-2 lg:mt-2">
+        <PushNotificationToggle compact />
+        <div className="min-w-fit pl-3">
+          <LogoutButton />
+        </div>
       </div>
     </nav>
   );

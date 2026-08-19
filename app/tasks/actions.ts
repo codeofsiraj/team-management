@@ -7,6 +7,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { logActivity } from "@/lib/activity";
 import { createNotification } from "@/lib/notifications";
+import { notifyAdminsAndTeamManagers } from "@/lib/recipientNotifications";
 
 const statuses = new Set(["pending", "in_progress", "completed"]);
 const priorities = new Set(["low", "medium", "high"]);
@@ -335,24 +336,33 @@ export async function updateOwnTaskStatus(formData: FormData) {
       entityId: id,
       description: `Updated task status for ${previous?.title ?? "task"}`,
     });
-    if (
-      previous?.assignedToId &&
-      status === "completed" &&
-      previous.status !== "completed"
-    ) {
-      await createNotification({
-        userId: previous.assignedToId,
-        title: "Task completed",
-        message: `Task completed: ${previous.title}`,
-        type: "TASK_COMPLETED",
+    if (sessionUser.role === "member") {
+      const user = await prisma.user.findUnique({
+        where: { id: sessionUser.id },
+        select: { name: true },
       });
-    } else if (previous?.assignedToId && previous.status !== status) {
-      await createNotification({
-        userId: previous.assignedToId,
-        title: "Task updated",
-        message: `Task status changed: ${previous.title}`,
+      await notifyAdminsAndTeamManagers({
+        actorUserId: sessionUser.id,
+        title: status === "completed" ? "Task completed" : "Task status updated",
+        message: `${user?.name ?? "An employee"} marked task "${previous?.title ?? "task"}" as ${status.replace("_", " ")}.`,
         type: "TASK_UPDATED",
       });
+    } else if (previous?.assignedToId && previous.assignedToId !== sessionUser.id) {
+      if (status === "completed" && previous.status !== "completed") {
+        await createNotification({
+          userId: previous.assignedToId,
+          title: "Task completed",
+          message: `Task completed: ${previous.title}`,
+          type: "TASK_COMPLETED",
+        });
+      } else if (previous.status !== status) {
+        await createNotification({
+          userId: previous.assignedToId,
+          title: "Task updated",
+          message: `Task status changed: ${previous.title}`,
+          type: "TASK_UPDATED",
+        });
+      }
     }
   } catch (error) {
     handlePrismaTaskError(error);

@@ -17,7 +17,13 @@ function urlBase64ToUint8Array(base64String: string) {
   return outputArray;
 }
 
-export default function PushNotificationToggle() {
+type PushNotificationToggleProps = {
+  compact?: boolean;
+};
+
+export default function PushNotificationToggle({
+  compact = false,
+}: PushNotificationToggleProps) {
   const publicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
   const [status, setStatus] = useState("Checking notification support...");
   const [isEnabled, setIsEnabled] = useState(false);
@@ -98,6 +104,27 @@ export default function PushNotificationToggle() {
       setIsEnabled(false);
       setStatus("Browser push notifications are disabled.");
     });
+  }
+
+  if (compact) {
+    return (
+      <div className="flex items-center justify-between gap-2 rounded-md border border-[#E5E7EB] bg-[#F8F7FB] px-3 py-2 text-xs">
+        <div className="min-w-0">
+          <p className="font-medium text-[#1F2937]">Push Alerts</p>
+          <p className="truncate text-[#6B7280]">
+            {isEnabled ? "Enabled" : "Disabled"}
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={isEnabled ? disablePush : enablePush}
+          disabled={isPending || !publicKey}
+          className="shrink-0 rounded border border-[#A05DD0]/30 bg-white px-2 py-1 font-medium text-[#770FC2] shadow-xs transition hover:bg-[#F3E8FF] disabled:opacity-50"
+        >
+          {isPending ? "..." : isEnabled ? "Disable" : "Enable"}
+        </button>
+      </div>
+    );
   }
 
   return (

@@ -12,9 +12,11 @@ function getNavItems(role?: string) {
     return [
       { label: "Manager Dashboard", href: "/manager" },
       { label: "Tasks", href: "/tasks" },
+      { label: "Attendance", href: "/attendance" },
       { label: "Daily Updates", href: "/updates" },
       { label: "Learnings", href: "/learnings" },
       { label: "AI Tools", href: "/tools" },
+      { label: "Feedback Center", href: "/feedback/submissions" },
       { label: "Activity", href: "/activity" },
       { label: "Search", href: "/search" },
     ];
@@ -24,9 +26,11 @@ function getNavItems(role?: string) {
     return [
       { label: "My Dashboard", href: "/member" },
       { label: "My Tasks", href: "/tasks" },
+      { label: "Attendance", href: "/attendance" },
       { label: "Daily Updates", href: "/updates" },
       { label: "Learnings", href: "/learnings" },
       { label: "AI Tools", href: "/tools" },
+      { label: "Feedback Center", href: "/feedback/submissions" },
       { label: "Activity", href: "/activity" },
       { label: "Search", href: "/search" },
     ];
@@ -37,9 +41,11 @@ function getNavItems(role?: string) {
     { label: "Employees", href: "/employees" },
     { label: "Teams", href: "/teams" },
     { label: "Tasks", href: "/tasks" },
+    { label: "Attendance", href: "/attendance" },
     { label: "Daily Updates", href: "/updates" },
     { label: "Learnings", href: "/learnings" },
     { label: "AI Tools", href: "/tools" },
+    { label: "Feedback Center", href: "/feedback/submissions" },
     { label: "Activity", href: "/activity" },
     { label: "Search", href: "/search" },
   ];

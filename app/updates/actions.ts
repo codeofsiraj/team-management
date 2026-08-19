@@ -8,6 +8,8 @@ import { prisma } from "@/lib/prisma";
 import { logActivity } from "@/lib/activity";
 import { createNotification } from "@/lib/notifications";
 
+import { notifyAdminsAndTeamManagers } from "@/lib/recipientNotifications";
+
 function getValue(formData: FormData, key: string) {
   const value = formData.get(key);
   return typeof value === "string" ? value.trim() : "";
@@ -69,29 +71,14 @@ export async function createDailyUpdate(formData: FormData) {
     });
     const user = await prisma.user.findUnique({
       where: { id: sessionUser.id },
-      select: { name: true, teamId: true },
+      select: { name: true },
     });
-    const recipients = await prisma.user.findMany({
-      where: {
-        OR: [
-          { role: "admin" },
-          { role: "manager", teamId: user?.teamId ?? "__no_team__" },
-        ],
-      },
-      select: { id: true },
+    await notifyAdminsAndTeamManagers({
+      actorUserId: sessionUser.id,
+      title: "Daily update created",
+      message: `${user?.name ?? "A user"} submitted a daily update.`,
+      type: "DAILY_UPDATE_CREATED",
     });
-    await Promise.all(
-      recipients
-        .filter((recipient) => recipient.id !== sessionUser.id)
-        .map((recipient) =>
-          createNotification({
-            userId: recipient.id,
-            title: "Daily update created",
-            message: `${user?.name ?? "A user"} submitted a daily update.`,
-            type: "DAILY_UPDATE_CREATED",
-          })
-        )
-    );
   } catch (error) {
     handleUpdateError(error);
   }
@@ -132,6 +119,23 @@ export async function updateDailyUpdate(formData: FormData) {
         todaysTasks,
         blockers: blockers || null,
       },
+    });
+    await logActivity({
+      userId: sessionUser.id,
+      action: "updated",
+      entityType: "daily_update",
+      entityId: id,
+      description: "Updated daily update",
+    });
+    const user = await prisma.user.findUnique({
+      where: { id: sessionUser.id },
+      select: { name: true },
+    });
+    await notifyAdminsAndTeamManagers({
+      actorUserId: sessionUser.id,
+      title: "Daily update updated",
+      message: `${user?.name ?? "A user"} updated a daily update.`,
+      type: "DAILY_UPDATE_CREATED",
     });
   } catch (error) {
     handleUpdateError(error);

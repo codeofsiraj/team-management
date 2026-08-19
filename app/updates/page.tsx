@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { Prisma } from "@prisma/client";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import DashboardLayout from "@/components/layout/DashboardLayout";
@@ -16,8 +17,16 @@ const dateFormatter = new Intl.DateTimeFormat("en-GB", {
   month: "short",
 });
 
+const datePattern = /^\d{4}-\d{2}-\d{2}$/;
+
 type UpdatesPageProps = {
-  searchParams: Promise<{ page?: string }>;
+  searchParams: Promise<{
+    page?: string;
+    employeeId?: string;
+    date?: string;
+    from?: string;
+    to?: string;
+  }>;
 };
 
 export default async function UpdatesPage({ searchParams }: UpdatesPageProps) {
@@ -42,14 +51,50 @@ export default async function UpdatesPage({ searchParams }: UpdatesPageProps) {
 
   const params = await searchParams;
   const page = getPage(params.page);
+  const employeeId = params.employeeId?.trim() || undefined;
+  const date = params.date?.trim() || undefined;
+  const from = params.from?.trim() || undefined;
+  const to = params.to?.trim() || undefined;
+
   const showEmployeeColumn = sessionUser.role === "admin";
-  const where =
+  const isManager = sessionUser.role === "manager";
+  const managerTeamId = currentUser?.teamId ?? "__no_team__";
+
+  let dateWhere: Prisma.DateTimeFilter | undefined;
+  if (date && datePattern.test(date)) {
+    dateWhere = {
+      gte: new Date(`${date}T00:00:00.000Z`),
+      lte: new Date(`${date}T23:59:59.999Z`),
+    };
+  } else if ((from && datePattern.test(from)) || (to && datePattern.test(to))) {
+    dateWhere = {
+      ...(from && datePattern.test(from)
+        ? { gte: new Date(`${from}T00:00:00.000Z`) }
+        : {}),
+      ...(to && datePattern.test(to)
+        ? { lte: new Date(`${to}T23:59:59.999Z`) }
+        : {}),
+    };
+  }
+
+  const where: Prisma.DailyUpdateWhereInput =
     sessionUser.role === "admin"
-      ? {}
-      : sessionUser.role === "manager"
-        ? { user: { teamId: currentUser?.teamId ?? "__no_team__" } }
-        : { userId: sessionUser.id };
-  const [updates, totalUpdates] = await Promise.all([
+      ? {
+          ...(employeeId ? { userId: employeeId } : {}),
+          ...(dateWhere ? { date: dateWhere } : {}),
+        }
+      : isManager
+        ? {
+            user: { teamId: managerTeamId },
+            ...(employeeId ? { userId: employeeId } : {}),
+            ...(dateWhere ? { date: dateWhere } : {}),
+          }
+        : {
+            userId: sessionUser.id,
+            ...(dateWhere ? { date: dateWhere } : {}),
+          };
+
+  const [updates, totalUpdates, employees] = await Promise.all([
     prisma.dailyUpdate.findMany({
       where,
       ...getPagination(page),
@@ -61,7 +106,22 @@ export default async function UpdatesPage({ searchParams }: UpdatesPageProps) {
       },
     }),
     prisma.dailyUpdate.count({ where }),
+    sessionUser.role === "admin"
+      ? prisma.user.findMany({
+          select: { id: true, name: true },
+          orderBy: { name: "asc" },
+        })
+      : isManager
+        ? prisma.user.findMany({
+            where: { teamId: managerTeamId },
+            select: { id: true, name: true },
+            orderBy: { name: "asc" },
+          })
+        : Promise.resolve([]),
   ]);
+
+  const showEmployeeFilter =
+    sessionUser.role === "admin" || sessionUser.role === "manager";
 
   return (
     <DashboardLayout>
@@ -79,12 +139,73 @@ export default async function UpdatesPage({ searchParams }: UpdatesPageProps) {
           {sessionUser.role !== "admin" ? (
             <Link
               href="/updates/new"
-              className="inline-flex items-center justify-center rounded-md bg-slate-950 px-4 py-2 text-sm font-medium text-white"
+              className="inline-flex items-center justify-center rounded-md bg-slate-950 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800"
             >
               Add Update
             </Link>
           ) : null}
         </header>
+
+        <form className="grid gap-3 rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:grid-cols-2 lg:grid-cols-5">
+          {showEmployeeFilter ? (
+            <label className="grid gap-1">
+              <span className="text-xs font-medium text-slate-700">Employee</span>
+              <select
+                name="employeeId"
+                defaultValue={employeeId ?? ""}
+                className="rounded-md border border-slate-300 px-3 py-2 text-sm"
+              >
+                <option value="">All employees</option>
+                {employees.map((emp) => (
+                  <option key={emp.id} value={emp.id}>
+                    {emp.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+          ) : null}
+          <label className="grid gap-1">
+            <span className="text-xs font-medium text-slate-700">Date</span>
+            <input
+              name="date"
+              type="date"
+              defaultValue={date ?? ""}
+              className="rounded-md border border-slate-300 px-3 py-2 text-sm"
+            />
+          </label>
+          <label className="grid gap-1">
+            <span className="text-xs font-medium text-slate-700">From Date</span>
+            <input
+              name="from"
+              type="date"
+              defaultValue={from ?? ""}
+              className="rounded-md border border-slate-300 px-3 py-2 text-sm"
+            />
+          </label>
+          <label className="grid gap-1">
+            <span className="text-xs font-medium text-slate-700">To Date</span>
+            <input
+              name="to"
+              type="date"
+              defaultValue={to ?? ""}
+              className="rounded-md border border-slate-300 px-3 py-2 text-sm"
+            />
+          </label>
+          <div className="flex items-end gap-2 sm:col-span-2 lg:col-span-1">
+            <button
+              type="submit"
+              className="rounded-md bg-slate-950 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800"
+            >
+              Filter
+            </button>
+            <Link
+              href="/updates"
+              className="inline-flex items-center justify-center rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+            >
+              Clear Filters
+            </Link>
+          </div>
+        </form>
 
         <section className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
           {updates.length === 0 ? (
