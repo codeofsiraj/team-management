@@ -6,8 +6,6 @@ import { Prisma } from "@prisma/client";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { logActivity } from "@/lib/activity";
-import { createNotification } from "@/lib/notifications";
-
 import { notifyAdminsAndTeamManagers } from "@/lib/recipientNotifications";
 
 function getValue(formData: FormData, key: string) {
